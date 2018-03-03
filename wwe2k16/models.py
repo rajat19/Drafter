@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
+from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.text import slugify
 from django.utils import timezone
 from django_countries.fields import CountryField
 
 class Brand(models.Model):
+    slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
@@ -12,14 +15,19 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('wwe2k16:brands', kwargs={'slug': self.slug})
+
     def save(self, *args, **kwargs):
-		if not self.created_at:
+        if not self.created_at:
 			self.created_at = timezone.now()
 
-		self.updated_at = timezone.now()
-		return super(Brand, self).save(*args, **kwargs)
+        self.slug = slugify(self.name)
+        self.updated_at = timezone.now()
+        return super(Brand, self).save(*args, **kwargs)
 
 class Wrestler(models.Model):
+    slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
     ovr = models.PositiveIntegerField(default=0)
     country = CountryField(blank_label='USA')
@@ -39,14 +47,19 @@ class Wrestler(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('wwe2k16:wrestlers', kwargs={'slug': self.slug})
+
     def save(self, *args, **kwargs):
-		if not self.created_at:
+        if not self.created_at:
 			self.created_at = timezone.now()
 
-		self.updated_at = timezone.now()
-		return super(Wrestler, self).save(*args, **kwargs)
+        self.slug = slugify(self.name)
+        self.updated_at = timezone.now()
+        return super(Wrestler, self).save(*args, **kwargs)
 
 class TagTeam(models.Model):
+    slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
     members = models.ManyToManyField(Wrestler)
     created_at = models.DateTimeField(null=True, blank=True)
@@ -59,12 +72,16 @@ class TagTeam(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
+    def get_absolute_url(self):
+        return reverse('wwe2k16:tagteams', kwargs={'slug': self.slug})
 
-		self.updated_at = timezone.now()
-		return super(TagTeam, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+			self.created_at = timezone.now()
+        
+        self.slug = slugify(self.name)
+        self.updated_at = timezone.now()
+        return super(TagTeam, self).save(*args, **kwargs)
 
 class Championship(models.Model):
     PRIMARY = 'PR'
@@ -77,6 +94,7 @@ class Championship(models.Model):
         (TERTIARY, 'Tertiary'),
         (TAG_TEAM, 'Tag Team'),
     )
+    slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
     belt_type = models.CharField(choices=BELT_TYPE_CHOICES, max_length=2, default=PRIMARY)
     champion = models.ManyToManyField(Wrestler, blank=True, default='')
@@ -90,14 +108,19 @@ class Championship(models.Model):
     def is_tagteam(self):
         return self.belt_type in (self.TAG_TEAM)
 
+    def get_absolute_url(self):
+        return reverse('wwe2k16:championships', kwargs={'slug': self.slug})
+
     def save(self, *args, **kwargs):
-		if not self.created_at:
+        if not self.created_at:
 			self.created_at = timezone.now()
 
-		self.updated_at = timezone.now()
-		return super(Championship, self).save(*args, **kwargs)
+        self.slug = slugify(self.name)
+        self.updated_at = timezone.now()
+        return super(Championship, self).save(*args, **kwargs)
 
 class Event(models.Model):
+    slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250)
     year = models.CharField(max_length=4)
     brand = models.ForeignKey(Brand, blank=True, default='')
@@ -111,14 +134,19 @@ class Event(models.Model):
     def __str__(self):
         return "%s (%s)" % (self.name, self.year)
 
+    def get_absolute_url(self):
+        return reverse('wwe2k16:events', kwargs={'slug': self.slug})
+
     def save(self, *args, **kwargs):
 		if not self.created_at:
 			self.created_at = timezone.now()
 
+		self.slug = slugify(self.name)
 		self.updated_at = timezone.now()
 		return super(Event, self).save(*args, **kwargs)
 
 class MatchType(models.Model):
+    slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
     no_of_participants = models.PositiveIntegerField(default=2)
     created_at = models.DateTimeField(null=True, blank=True)
@@ -128,10 +156,14 @@ class MatchType(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('wwe2k16:matchtypes', kwargs={'slug': self.slug})
+
     def save(self, *args, **kwargs):
 		if not self.created_at:
 			self.created_at = timezone.now()
 
+		self.slug = slugify(self.name)
 		self.updated_at = timezone.now()
 		return super(MatchType, self).save(*args, **kwargs)
 
