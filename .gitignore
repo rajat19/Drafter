@@ -99,3 +99,22 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Database file
+*.sqlite3
+
+# All templates/test.html
+*/*/*/test.html
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/*
+!.vscode/launch.json
+
+# Private (production) data
+garbage/
+migrations
+private
+*.private.*
