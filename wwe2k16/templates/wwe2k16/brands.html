@@ -1,0 +1,19 @@
+{% extends 'wwe2k16/base.html' %}
+
+{% block body %}
+	<section>
+		<div class="row">
+		{% for brand in all_brands %}
+			<div class="col m4 s12 center">
+				<a href="{% url 'wwe2k16:brand' brand.name %}" class="gray-text">
+					<div class="card z-depth-5">
+						<div class="card-content">
+							<span class="card-title">{{brand.name}}</span>
+						</div>
+					</div>
+				</a>
+			</div>
+		{% endfor %}
+		</div>
+	</section>
+{% endblock %}

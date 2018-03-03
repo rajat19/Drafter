@@ -4,7 +4,7 @@ from . import views
 app_name = 'wwe2k16'
 
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
+    url(r'^$', views.IndexView.as_view(), name='brands'),
 
     # /wwe2k16/brand/raw
     url(r'^brand/(?P<slug>[\w-]+)$', views.BrandView.as_view(), name='brand'),
@@ -92,4 +92,8 @@ urlpatterns = [
 
     # /wwe2k16/matchtype/triple-threat/delete
     url(r'^matchtype/(?P<slug>[\w-]+)/delete/$', views.MatchTypeDelete.as_view(), name='matchtype-delete'),
+
+    # /wwe2k16/match/add
+    url(r'^match/add/$', views.MatchCreate.as_view(), name='match-add'),
+
 ]
