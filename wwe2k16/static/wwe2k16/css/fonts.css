@@ -1,0 +1,48 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'), 
+       url(../fonts/material.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: Exo;
+  src: local("Exo Regular"),
+       local("Exo-Regular"),
+       url(../fonts/Exo-Regular.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: Pangolin;
+  src: local("Pangolin Regular"),
+       local("Pangolin-Regular"),
+       url(../fonts/Pangolin-Regular.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: Samarkan;
+  src: local("Samarkan Normal"),
+       local("Samarkan"),
+       url(../fonts/Samarkan.ttf);
+  font-weight: bold;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}

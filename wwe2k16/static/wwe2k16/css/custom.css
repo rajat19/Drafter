@@ -1,0 +1,135 @@
+body{
+  font-family: 'Pangolin', cursive !important;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.samarkan{
+	font-family: 'Samarkan' !important;
+}
+
+main{
+	flex: 1 0 auto
+}
+/*@media only screen and (min-width: 600px) {
+	.backcover {
+		background-image: url('../images/bg.jpg') !important;
+		background-size: cover;
+		background-position: center;
+	}
+	.phonecover {
+		display: none;
+	}
+}
+@media only screen and (max-width: 600px) {
+	.backcover {
+		background-color: #ededed;
+	}
+}*/
+#search-nav {
+	height: 60px !important;
+}
+
+.likelabel {
+	left: 0.75rem;
+	top: -14px;
+	font-size: 0.8rem;
+	color: #9e9e9e !important;
+	cursor: text;
+	transition: .2s ease-out;
+}
+.light-text {
+	color: #9e9e9e !important;
+}
+
+.card-grey {
+	background-color: #dee1e3 !important;
+}
+
+.card-header {
+	padding: 10px !important;
+}
+
+.dark-text {
+	color: #6e7984 !important;
+}
+
+.link-grey {
+	color:#777 !important;
+}
+
+#sidenav-overlay {
+	display: none;
+}
+
+.notif-date {
+	font-size: small !important;
+	color: crimson !important;
+	font-style: italic !important;
+	font-weight: bold !important;
+}
+
+/*.dropdown-content {
+	position: inherit !important;
+	color: white !important;
+}*/
+
+.dropdown-content li>a{
+	color: white !important;
+}
+
+.side-nav a {
+	color: white !important;
+}
+
+.collection a{
+    text-decoration:none;
+    color: #123;
+}
+
+.collection .collection-item.avatar .imgsqr {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    overflow: hidden;
+    left: 15px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.imgsqr {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    left: 15px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.img-enhance {
+	-webkit-transition:-webkit-box-shadow .6s,background 2s,-webkit-border-radius .1s;
+}
+
+.img-enhance:hover {
+	-webkit-box-shadow:#ff8a65 10px 10px;
+	-webkit-border-radius:5px;
+	/*background:-webkit-linear-gradient(60deg,orange,white);*/
+}
+
+#common-strip {
+	position: fixed;
+	width: 100%;
+}
+
+nav {
+	margin-top: 20px;
+}
+
+nav .nav-wrapper {
+	padding-left: 10px;
+}
+
+.container {
+	margin-top: 20px;
+}
