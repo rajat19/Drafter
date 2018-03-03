@@ -10,7 +10,7 @@ from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagT
 from .forms import MatchForm
 
 class IndexView(generic.ListView):
-    template_name = 'wwe2k16/index.html'
+    template_name = 'wwe2k16/brands.html'
     context_object_name = 'all_brands'
 
     def get_queryset(self):
@@ -62,7 +62,7 @@ class WrestlerUpdate(UpdateView):
     template_name = 'wwe2k16/forms/update/wrestler.html'
 
 class TagTeamsView(generic.ListView):
-    template_name = 'wwe2k16/TagTeams.html'
+    template_name = 'wwe2k16/tag_teams.html'
     context_object_name = 'all_tag_teams'
 
     def get_queryset(self):
@@ -87,7 +87,7 @@ class TagTeamUpdate(UpdateView):
     template_name = 'wwe2k16/forms/update/tag_team.html'
 
 class EventsView(generic.ListView):
-    template_name = 'wwe2k16/Events.html'
+    template_name = 'wwe2k16/events.html'
     context_object_name = 'all_events'
 
     def get_queryset(self):
@@ -112,7 +112,7 @@ class EventUpdate(UpdateView):
     template_name = 'wwe2k16/forms/update/event.html'
 
 class ChampionshipsView(generic.ListView):
-    template_name = 'wwe2k16/Championships.html'
+    template_name = 'wwe2k16/championships.html'
     context_object_name = 'all_championships'
 
     def get_queryset(self):
@@ -137,7 +137,7 @@ class ChampionshipUpdate(UpdateView):
     template_name = 'wwe2k16/forms/update/championship.html'
 
 class MatchTypesView(generic.ListView):
-    template_name = 'wwe2k16/MatchTypes.html'
+    template_name = 'wwe2k16/match_types.html'
     context_object_name = 'all_match_types'
 
     def get_queryset(self):
@@ -162,7 +162,7 @@ class MatchTypeUpdate(UpdateView):
     template_name = 'wwe2k16/forms/update/match_type.html'
 
 class MatchesView(generic.ListView):
-    template_name = 'wwe2k16/Matchs.html'
+    template_name = 'wwe2k16/matches.html'
     context_object_name = 'all_matches'
 
     def get_queryset(self):

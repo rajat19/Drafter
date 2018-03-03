@@ -139,7 +139,7 @@ class Match(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     championship = models.ForeignKey(Championship, null=True, blank=True)
     match_type = models.ForeignKey(MatchType, blank=True, default='')
-    participants = models.ManyToManyField(Wrestler, blank=True, related_name='participated_match')
+    participants = models.ManyToManyField(Wrestler, blank=True, related_name='participating_match')
     winner = models.ForeignKey(Wrestler, null=True, blank=True, related_name='winning_match')
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
