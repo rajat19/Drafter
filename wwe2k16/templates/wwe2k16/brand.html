@@ -7,12 +7,12 @@
 		<div class="row">
 			<div class="col s12">
 				<div class="card z-depth-5">
-					<div class="card-content blue-grey lighten-4">
+					<div class="card-content {{brand.color}} lighten-4">
 						<span class="card-title center">{{brand.name}}</span>
 						<div class="row">
 							{% for wrestler in brand.wrestler_set.all %}
 								<div class="col m4 s12 center">
-									<a href="{% url 'wwew2k16:wrestler' wrestler:id %}">
+									<a href="{% url 'wwew2k16:wrestler' wrestler.slug %}">
 										<div class="card z-depth-5">
 											<div class="card-content">
 												<span class="card-title">{{wrestler.name}}</span>
@@ -21,7 +21,7 @@
 									</a>
 								</div>
 								{% empty %}
-								<p>No wrestler for current brand</p>
+								<h4	>No wwe superstar currently in {{brand.name}} brand</h4>
 							{% endfor %}
 						</div>
 					</div>

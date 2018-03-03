@@ -70,13 +70,19 @@ main{
 	font-weight: bold !important;
 }
 
-/*.dropdown-content {
+.dropdown-content {
+	min-width: 40px;
 	position: inherit !important;
 	color: white !important;
-}*/
+}
 
-.dropdown-content li>a{
+.dropdown-content li>a {
 	color: white !important;
+}
+
+.dropdown-content li>a:hover{
+	color: white !important;
+	background-color: lightslategray !important;
 }
 
 .side-nav a {
@@ -120,10 +126,6 @@ main{
 #common-strip {
 	position: fixed;
 	width: 100%;
-}
-
-nav {
-	margin-top: 20px;
 }
 
 nav .nav-wrapper {

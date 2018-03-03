@@ -4,10 +4,10 @@
 	<section>
 		<div class="row">
 		{% for brand in all_brands %}
-			<div class="col m4 s12 center">
-				<a href="{% url 'wwe2k16:brand' brand.name %}" class="gray-text">
+			<div class="col m6 s12 center">
+				<a href="{% url 'wwe2k16:brand' brand.slug %}" class="gray-text">
 					<div class="card z-depth-5">
-						<div class="card-content">
+						<div class="card-content {{brand.color}} white-text">
 							<span class="card-title">{{brand.name}}</span>
 						</div>
 					</div>
