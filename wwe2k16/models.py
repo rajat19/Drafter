@@ -8,6 +8,7 @@ from django_countries.fields import CountryField
 class Brand(models.Model):
     slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
+    color = models.CharField(max_length=20, default='black')
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -16,7 +17,7 @@ class Brand(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:brands', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:brands')
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -48,7 +49,7 @@ class Wrestler(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:wrestlers', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:wrestler', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -73,7 +74,7 @@ class TagTeam(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:tagteams', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:tagteam', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -109,7 +110,7 @@ class Championship(models.Model):
         return self.belt_type in (self.TAG_TEAM)
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:championships', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:championship', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -135,7 +136,7 @@ class Event(models.Model):
         return "%s (%s)" % (self.name, self.year)
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:events', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:event', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
 		if not self.created_at:
@@ -157,7 +158,7 @@ class MatchType(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:matchtypes', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:matchtype', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
 		if not self.created_at:

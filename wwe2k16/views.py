@@ -14,7 +14,7 @@ class IndexView(generic.ListView):
     context_object_name = 'all_brands'
 
     def get_queryset(self):
-        return Brand.objects.all().order_by('name')
+        return Brand.objects.all().order_by('created_at')
 
 class BrandView(generic.DetailView):
     model = Brand
@@ -22,7 +22,7 @@ class BrandView(generic.DetailView):
 
 class BrandCreate(CreateView):
     model = Brand
-    fields = ['name']
+    fields = ['name', 'color']
     template_name = 'wwe2k16/forms/create/brand.html'
 
 class BrandDelete(DeleteView):
