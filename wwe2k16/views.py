@@ -1,10 +1,12 @@
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.views import generic
 from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
-from django.utils import timezone
 from django_countries.widgets import CountrySelectWidget
+import json
 
 from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam
 from .forms import MatchForm
@@ -124,7 +126,7 @@ class ChampionshipView(generic.DetailView):
 
 class ChampionshipCreate(CreateView):
     model = Championship
-    fields = ['name', 'belt_type', 'champion', 'champion2']
+    fields = ['name', 'belt_type', 'champion']
     template_name = 'wwe2k16/forms/create/championship.html'
 
 class ChampionshipDelete(DeleteView):
@@ -133,7 +135,7 @@ class ChampionshipDelete(DeleteView):
 
 class ChampionshipUpdate(UpdateView):
     model = Championship
-    fields = ['name', 'belt_type', 'champion', 'champion2']
+    fields = ['name', 'belt_type', 'champion']
     template_name = 'wwe2k16/forms/update/championship.html'
 
 class MatchTypesView(generic.ListView):
@@ -206,3 +208,17 @@ class MatchUpdate(UpdateView):
     model = Match
     fields = ['event', 'match_type', 'participants']
     template_name = 'wwe2k16/forms/update/match.html'
+
+def get_wrestlers(request):
+    mimetype = 'application/json'
+    print(request.GET)
+    if request.is_ajax():
+        q = request.GET.get('term', '')
+        wrestlers = Wrestler.objects.filter(name__icontains = q)
+        results = []
+        for wrestler in wrestlers:
+            results.append(wrestler.name)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    return HttpResponse(data, mimetype)

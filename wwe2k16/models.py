@@ -31,7 +31,7 @@ class Wrestler(models.Model):
     slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250, unique=True)
     ovr = models.PositiveIntegerField(default=0)
-    country = CountryField(blank_label='USA')
+    country = CountryField(blank_label='( Select country )', blank=True)
     brand = models.ForeignKey(Brand, blank=True, default='', null=True, on_delete=models.SET_DEFAULT)
     height = models.PositiveIntegerField(null=True, blank=True)
     weight = models.PositiveIntegerField(null=True, blank=True)
@@ -49,9 +49,14 @@ class Wrestler(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('wwe2k16:wrestler', kwargs={'slug': self.slug})
+        return reverse('wwe2k16:wrestler-add')
+
+    def total_titles(self):
+        return self.primary + self.secondary + self.tertiary + self.tag_team
 
     def save(self, *args, **kwargs):
+        if not self.country:
+            self.country = 'US'
         if not self.created_at:
 			self.created_at = timezone.now()
 
@@ -113,6 +118,7 @@ class Championship(models.Model):
         return reverse('wwe2k16:championship', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
+        print(self.champion)
         if not self.created_at:
 			self.created_at = timezone.now()
 
@@ -173,7 +179,7 @@ class Match(models.Model):
     championship = models.ForeignKey(Championship, null=True, blank=True)
     match_type = models.ForeignKey(MatchType, blank=True, default='')
     participants = models.ManyToManyField(Wrestler, blank=True, related_name='participating_match')
-    winner = models.ForeignKey(Wrestler, null=True, blank=True, related_name='winning_match')
+    winner = models.ManyToManyField(Wrestler, null=True, blank=True, related_name='winning_match')
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -187,3 +193,21 @@ class Match(models.Model):
 
 		self.updated_at = timezone.now()
 		return super(Match, self).save(*args, **kwargs)
+
+class ChampionshipHistory(models.Model):
+    match = models.ForeignKey(Match, null=True, blank=True)
+    old_champion = models.ManyToManyField(Wrestler, null=True, blank=True, related_name='losing_champion')
+    new_champion = models.ManyToManyField(Wrestler, null=True, blank=True, related_name='winning_champion')
+    created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'history'
+
+    def save(self, *args, **kwargs):
+		if not self.created_at:
+			self.created_at = timezone.now()
+
+		self.updated_at = timezone.now()
+		return super(ChampionshipHistory, self).save(*args, **kwargs)
