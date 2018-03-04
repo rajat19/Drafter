@@ -16,6 +16,7 @@ $(document).ready(function() {
 		formatSubmit: 'yyyy-mm-dd',
 		hiddenName: true,
 	});
+	$('.chips').material_chip();
 
 	// $('.timepicker').pickatime({
 	//     default: 'now',
