@@ -27,6 +27,14 @@
 				<textarea name="{{ field.name }}" id="" cols="30" rows="10" class="materialize-textarea"></textarea>
 				{{ field.label_tag }}
 			</div>
+		{% elif field|fieldtype == 'SelectMultiple' %}
+			<div class="input-field col s12">
+				<span class="red-text">
+					{{ field.errors }}
+				</span>
+				<div class="chips chips-autocomplete" id="{{ field.id_for_label }}" name="{{ field.name }}"></div>
+				{{ field.label_tag }}
+			</div>
 		{% else %}
 			<div class="input-field col s12">
 				<span class="red-text">
