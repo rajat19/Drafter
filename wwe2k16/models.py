@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.text import slugify
@@ -118,7 +117,6 @@ class Championship(models.Model):
         return reverse('wwe2k16:championship', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
-        print(self.champion)
         if not self.created_at:
 			self.created_at = timezone.now()
 
@@ -179,7 +177,7 @@ class Match(models.Model):
     championship = models.ForeignKey(Championship, null=True, blank=True)
     match_type = models.ForeignKey(MatchType, blank=True, default='')
     participants = models.ManyToManyField(Wrestler, blank=True, related_name='participating_match')
-    winner = models.ManyToManyField(Wrestler, null=True, blank=True, related_name='winning_match')
+    winner = models.ManyToManyField(Wrestler, blank=True, related_name='winning_match')
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -196,8 +194,8 @@ class Match(models.Model):
 
 class ChampionshipHistory(models.Model):
     match = models.ForeignKey(Match, null=True, blank=True)
-    old_champion = models.ManyToManyField(Wrestler, null=True, blank=True, related_name='losing_champion')
-    new_champion = models.ManyToManyField(Wrestler, null=True, blank=True, related_name='winning_champion')
+    old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='losing_champion')
+    new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='winning_champion')
     created_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

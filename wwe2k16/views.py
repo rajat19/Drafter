@@ -9,7 +9,7 @@ from django_countries.widgets import CountrySelectWidget
 import json
 
 from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam
-from .forms import MatchForm
+from .forms import MatchForm, ChampionshipForm
 
 class IndexView(generic.ListView):
     template_name = 'wwe2k16/brands.html'
@@ -125,9 +125,27 @@ class ChampionshipView(generic.DetailView):
     template_name = 'wwe2k16/championship.html'
 
 class ChampionshipCreate(CreateView):
-    model = Championship
-    fields = ['name', 'belt_type', 'champion']
+    form_class = ChampionshipForm
     template_name = 'wwe2k16/forms/create/championship.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        newdict = dict(request.POST.lists())
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            championship = form.save(commit=False)
+            champion_temp = newdict[u'champion_temp[]']
+            championship.save()
+            champion_temp = [str(x) for x in champion_temp]
+            for c in champion_temp:
+                champ = Wrestler.objects.get(name = c)
+                championship.champion.add(champ)
+
+        # FIXME: return a json response instead of sending render
+        return render(request, self.template_name, {'form': form})
 
 class ChampionshipDelete(DeleteView):
     model = Championship

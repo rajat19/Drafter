@@ -12,6 +12,11 @@ class WrestlerForm(forms.ModelForm):
         model = Wrestler
         fields = ['name', 'ovr', 'country', 'brand', 'height', 'weight', 'original_primary', 'original_secondary', 'primary', 'secondary', 'tertiary', 'tag_team']
 
+class ChampionshipForm(forms.ModelForm):
+    class Meta:
+        model = Championship
+        fields = ['name', 'belt_type', 'champion']
+
 class MatchForm(forms.ModelForm):
     fields = ['event', 'championship', 'match_type', 'participants', 'winner']
 
