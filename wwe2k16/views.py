@@ -133,16 +133,15 @@ class ChampionshipCreate(CreateView):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        newdict = dict(request.POST.lists())
+        champions_list = dict(request.POST.lists())[u'champions_list[]']
+        modified_champions_list = [str(x) for x in champions_list]
         form = self.form_class(request.POST)
         if form.is_valid():
             championship = form.save(commit=False)
-            champion_temp = newdict[u'champion_temp[]']
             championship.save()
-            champion_temp = [str(x) for x in champion_temp]
-            for c in champion_temp:
-                champ = Wrestler.objects.get(name = c)
-                championship.champion.add(champ)
+            for x in modified_champions_list:
+                champion = Wrestler.objects.get(name = x)
+                championship.champion.add(champion)
 
         # FIXME: return a json response instead of sending render
         return render(request, self.template_name, {'form': form})
