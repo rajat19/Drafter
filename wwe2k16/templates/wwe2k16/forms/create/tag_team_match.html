@@ -1,0 +1,85 @@
+{% extends 'wwe2k16/base.html' %}
+{% block title %}Add New Tag Team Match{% endblock %}
+
+{% block body %}
+	<section>
+		<div class="row">
+			<div class="col s12 m8 offset-m2">
+				<div class="card z-depth-5">
+					<div class="card-content">
+						<span class="card-title">Add New Tag Match</span>
+						{% csrf_token %}
+						{% include 'wwe2k16/forms/template.html' %}
+						{% include 'wwe2k16/forms/error.html' %}
+						<div class="row">
+							<div class="input-field col s12">
+								<button class="btn waves-effect waves-light green lighten-1" id="submit">Add Match
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+
+{% block script %}
+<script>
+	$(document).ready(() => {
+		$(() => {
+			$.ajax({
+				type: 'GET',
+				url: '/wwe2k16/api/wrestlers/',
+				success: function(response) {
+					var customData = {};
+					response.forEach(el => {
+						customData[el] = null;
+					});
+					$('#id_team1').material_chip({
+						autocompleteOptions: {
+							data: customData,
+							limit: Infinity,
+							minLength: 1,
+						}
+					});
+					$('#id_team2').material_chip({
+						autocompleteOptions: {
+							data: customData,
+							limit: Infinity,
+							minLength: 1,
+						}
+					});
+				}
+			});
+		});
+		$('#submit').click((e) => {
+			const team1Data = $('#id_team1').material_chip('data');
+			const team2Data = $('#id_team2').material_chip('data');
+			const options = {
+				team1: [], team2: [],
+			};
+			team1Data.forEach(el => {
+				options.team1.push(el.tag);
+			});
+			team2Data.forEach(el => {
+				options.team2.push(el.tag);
+			});
+			const event = $('#id_event').val();
+			const championship = $('#id_championship').val();
+			const winner = $('#id_winner').val();
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe2k16/match/tagteam/add/", {
+				event,
+				championship,
+				winner,
+				team1_list: options.team1,
+				team2_list: options.team2,
+			},
+			function(response, status) {
+				console.log(response);
+			});
+		});
+	});
+</script>
+{% endblock %}
