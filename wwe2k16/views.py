@@ -9,7 +9,7 @@ from django_countries.widgets import CountrySelectWidget
 import json
 
 from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam
-from .forms import MatchForm, ChampionshipForm
+from .forms import MatchForm, ChampionshipForm, TagTeamForm
 
 class IndexView(generic.ListView):
     template_name = 'wwe2k16/brands.html'
@@ -75,9 +75,26 @@ class TagTeamView(generic.DetailView):
     template_name = 'wwe2k16/tag_team.html'
 
 class TagTeamCreate(CreateView):
-    model = TagTeam
-    fields = ['name', 'members']
+    form_class = TagTeamForm
     template_name = 'wwe2k16/forms/create/tag_team.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        members_list = dict(request.POST.lists())[u'members_list[]']
+        modified_members_list = [str(x) for x in members_list]
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            tag_team = form.save(commit=False)
+            tag_team.save()
+            for x in modified_members_list:
+                member = Wrestler.objects.get(name = x)
+                tag_team.members.add(member)
+
+        # FIXME: return a json response instead of sending render
+        return render(request, self.template_name, {'form': form})
 
 class TagTeamDelete(DeleteView):
     model = TagTeam
@@ -200,6 +217,46 @@ class MatchCreate(View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
+        participants_list = dict(request.POST.lists())[u'participants_list[]']
+        modified_participants_list = [str(x) for x in participants_list]
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            match = form.save(commit=False)
+            belt_type = match.championship.belt_type
+            if belt_type == 'PR':
+                match.winner.primary += 1
+            elif belt_type == 'SE':
+                match.winner.secondary += 1
+            elif belt_type == 'TE':
+                match.winner.tertiary += 1
+            elif belt_type == 'TT':
+                match.winner.tag_team += 1
+            match.winner.save()
+            match.save()
+            for x in modified_participants_list:
+                participant = Wrestler.objects.get(name = x)
+                match.participants.add(participant)
+
+        return render(request, self.template_name, {'form': form})
+
+class MatchDelete(DeleteView):
+    model = Match
+    success_url = reverse_lazy('wwe2k16:matches')
+
+class MatchUpdate(UpdateView):
+    model = Match
+    fields = ['event', 'match_type', 'participants']
+    template_name = 'wwe2k16/forms/update/match.html'
+
+class TagTeamMatchCreate(View):
+    form_class = MatchForm
+    template_name = 'wwe2k16/forms/create/tag_team_match.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
             match = form.save(commit=False)
@@ -216,15 +273,6 @@ class MatchCreate(View):
             match.save()
 
         return render(request, self.template_name, {'form': form})
-
-class MatchDelete(DeleteView):
-    model = Match
-    success_url = reverse_lazy('wwe2k16:matches')
-
-class MatchUpdate(UpdateView):
-    model = Match
-    fields = ['event', 'match_type', 'participants']
-    template_name = 'wwe2k16/forms/update/match.html'
 
 def get_wrestlers(request):
     mimetype = 'application/json'

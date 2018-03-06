@@ -96,6 +96,9 @@ urlpatterns = [
     # /wwe2k16/match/add
     url(r'^match/add/$', views.MatchCreate.as_view(), name='match-add'),
 
+    # /wwe2k16/match/tagteam/add
+    url(r'^match/tagteam/add/$', views.TagTeamMatchCreate.as_view(), name='tagteammatch-add'),
+
     # /wwe2k16/ajax/wrestlers
     url(r'^api/wrestlers/$', views.get_wrestlers, name='wrestlers-api'),
 ]
