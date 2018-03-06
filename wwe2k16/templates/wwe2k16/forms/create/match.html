@@ -13,7 +13,7 @@
 						{% include 'wwe2k16/forms/error.html' %}
 						<div class="row">
 							<div class="input-field col s12">
-								<button class="btn waves-effect waves-light green lighten-1" type="submit">Add Match
+								<button class="btn waves-effect waves-light green lighten-1" id="submit">Add Match
 								</button>
 							</div>
 						</div>
@@ -26,6 +26,19 @@
 
 {% block script %}
 <script>
+	function setAutocompleteData() {
+		const chipData = $('#id_participants').material_chip('data');
+		const customData = {};
+		chipData.forEach(el => {
+			customData[el.tag] = null;
+		});
+		console.log(customData);
+		$('#id_winner').autocomplete({
+			data: customData,
+			minLength: 1,
+		});
+	}
+
 	$(document).ready(() => {
 		$(() => {
 			$.ajax({
@@ -43,13 +56,14 @@
 							minLength: 1,
 						}
 					});
-					// TODO: Devise a way to only get participant list
-					$('#id_winner').autocomplete({
-						data: customData,
-						minLength: 1,
-					});
 				}
 			});
+		});
+		$('#id_participants').on('chip.add', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#id_participants').on('chip.delete', (e, chip) => {
+			setAutocompleteData();
 		});
 		$('#submit').click((e) => {
 			const chipData = $('#id_participants').material_chip('data');
