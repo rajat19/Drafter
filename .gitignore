@@ -106,9 +106,6 @@ ENV/
 # All templates/test.html
 */*/*/test.html
 
-# Environment variables
-.env
-
 # VS Code
 .vscode/*
 !.vscode/launch.json
