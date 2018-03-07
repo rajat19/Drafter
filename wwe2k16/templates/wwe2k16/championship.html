@@ -19,7 +19,7 @@
 									</tr>
 									<tr>
 										<td>Champions: </td>
-									{% for champ in championship.champion %}
+									{% for champ in championship.champion.all %}
 										<td>{{ champ.name }}</td>
 									{% empty %}
 										No champion

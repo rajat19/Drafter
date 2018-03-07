@@ -77,7 +77,12 @@
 			const winner = $('#id_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
 			$.post("/wwe2k16/match/add/", {
-				event, championship, match_type, winner, participants_list: options,
+				event,
+				championship,
+				match_type,
+				winner,
+				csrfmiddlewaretoken,
+				participants_list: options,
 			},
 			function(response, status) {
 				console.log(response);
