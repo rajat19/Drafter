@@ -4,10 +4,17 @@ from django.utils.text import slugify
 from django.utils import timezone
 from django_countries.fields import CountryField
 
+INACTIVE = False
+ACTIVE = True
+STATUS_CHOICES = (
+	(ACTIVE, 'Active'),
+	(INACTIVE, 'Inactive'),
+)
 class Brand(models.Model):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250, unique=True)
 	color = models.CharField(max_length=20, default='black')
+	status = models.BooleanField(choices=STATUS_CHOICES, default=ACTIVE)
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
 	deleted_at = models.DateTimeField(null=True, blank=True)
@@ -52,6 +59,9 @@ class Wrestler(models.Model):
 
 	def total_titles(self):
 		return self.primary + self.secondary + self.tertiary + self.tag_team
+
+	def total_points(self):
+		return (3 * self.primary) + (2 * self.secondary) + (1 * self.tertiary) + (1 * self.tag_team) + (0.5 * self.ovr) + (self.original_primary)
 
 	def save(self, *args, **kwargs):
 		if not self.country:
@@ -102,6 +112,7 @@ class Championship(models.Model):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250, unique=True)
 	belt_type = models.CharField(choices=BELT_TYPE_CHOICES, max_length=2, default=PRIMARY)
+	status = models.BooleanField(choices=STATUS_CHOICES, default=ACTIVE)
 	champion = models.ManyToManyField(Wrestler, blank=True, default='')
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
@@ -220,8 +231,8 @@ class TagTeamMatch(models.Model):
 
 class ChampionshipHistory(models.Model):
 	match = models.ForeignKey(Match, null=True, blank=True)
-	old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='losing_champion')
-	new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='winning_champion')
+	old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='old_champion')
+	new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='new_champion')
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
 	deleted_at = models.DateTimeField(null=True, blank=True)

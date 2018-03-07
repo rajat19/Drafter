@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_countries.widgets import CountrySelectWidget
 import json
 
-from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam
+from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam, ChampionshipHistory
 from .forms import MatchForm, ChampionshipForm, TagTeamForm
 
 class IndexView(generic.ListView):
@@ -231,7 +231,10 @@ class MatchCreate(View):
 		form = self.form_class(request.POST)
 		if form.is_valid():
 			match = form.save(commit=False)
-			belt_type = match.championship.belt_type
+			championship = match.championship
+			belt_type = championship.belt_type
+			old_champion = championship.champion.all()[0]
+			new_champion = match.winner
 			if belt_type == 'PR':
 				match.winner.primary += 1
 			elif belt_type == 'SE':
@@ -242,6 +245,16 @@ class MatchCreate(View):
 				match.winner.tag_team += 1
 			match.winner.save()
 			match.save()
+
+			if old_champion.name != match.winner.name:
+				match.championship.champion.remove(old_champion)
+				match.championship.champion.add(new_champion)
+
+			championship_history = ChampionshipHistory(match=match)
+			championship_history.save()
+			championship_history.old_champion.add(old_champion)
+			championship_history.new_champion.add(new_champion)
+
 			for x in modified_participants_list:
 				participant = Wrestler.objects.get(name = x)
 				match.participants.add(participant)
@@ -266,6 +279,7 @@ class TagTeamMatchCreate(View):
 		return render(request, self.template_name, {'form': form})
 
 	def post(self, request):
+		# TODO: update championship and its history
 		request_dict = dict(request.POST.lists())
 		team1_list = request_dict[u'team1_list[]']
 		team2_list = request_dict[u'team2_list[]']
@@ -296,7 +310,6 @@ class TagTeamMatchCreate(View):
 
 def get_wrestlers(request):
 	mimetype = 'application/json'
-	print(request.GET)
 	if request.is_ajax():
 		q = request.GET.get('term', '')
 		wrestlers = Wrestler.objects.filter(name__icontains = q)
