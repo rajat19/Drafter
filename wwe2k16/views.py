@@ -83,7 +83,10 @@ class TagTeamCreate(CreateView):
 		return render(request, self.template_name, {'form': form})
 
 	def post(self, request):
-		members_list = dict(request.POST.lists())[u'members_list[]']
+		request_dict = dict(request.POST.lists())
+		members_list = []
+		if u'members_list[]' in request_dict:
+			members_list = request_dict[u'members_list[]']
 		modified_members_list = [str(x) for x in members_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
@@ -135,7 +138,7 @@ class ChampionshipsView(generic.ListView):
 	context_object_name = 'all_championships'
 
 	def get_queryset(self):
-		return Championship.objects.all().order_by('name')
+		return Championship.objects.all().order_by('created_at')
 
 class ChampionshipView(generic.DetailView):
 	model = Championship
@@ -150,7 +153,10 @@ class ChampionshipCreate(CreateView):
 		return render(request, self.template_name, {'form': form})
 
 	def post(self, request):
-		champions_list = dict(request.POST.lists())[u'champions_list[]']
+		request_dict = dict(request.POST.lists())
+		champions_list = []
+		if u'champions_list[]' in request_dict:
+			champions_list = request_dict[u'champions_list[]']
 		modified_champions_list = [str(x) for x in champions_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
@@ -217,7 +223,10 @@ class MatchCreate(View):
 		return render(request, self.template_name, {'form': form})
 
 	def post(self, request):
-		participants_list = dict(request.POST.lists())[u'participants_list[]']
+		request_dict = dict(request.POST.lists())
+		participants_list = []
+		if u'participants_list[]' in request_dict:
+			participants_list = request_dict[u'participants_list[]']
 		modified_participants_list = [str(x) for x in participants_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():

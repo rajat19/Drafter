@@ -128,7 +128,7 @@ class Event(models.Model):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250)
 	year = models.CharField(max_length=4)
-	brand = models.ForeignKey(Brand, blank=True, default='')
+	brand = models.ForeignKey(Brand, blank=True, default='', null=True)
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
 	deleted_at = models.DateTimeField(null=True, blank=True)
@@ -140,13 +140,13 @@ class Event(models.Model):
 		return "%s (%s)" % (self.name, self.year)
 
 	def get_absolute_url(self):
-		return reverse('wwe2k16:event', kwargs={'slug': self.slug})
+		return reverse('wwe2k16:event-add')
 
 	def save(self, *args, **kwargs):
 		if not self.created_at:
 			self.created_at = timezone.now()
 
-		self.slug = slugify(self.name)
+		self.slug = slugify(self.__str__)
 		self.updated_at = timezone.now()
 		return super(Event, self).save(*args, **kwargs)
 
@@ -162,7 +162,7 @@ class MatchType(models.Model):
 		return self.name
 
 	def get_absolute_url(self):
-		return reverse('wwe2k16:matchtype', kwargs={'slug': self.slug})
+		return reverse('wwe2k16:matchtype-add')
 
 	def save(self, *args, **kwargs):
 		if not self.created_at:
