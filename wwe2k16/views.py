@@ -1,3 +1,4 @@
+from django.core.management import call_command
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.shortcuts import render, redirect

@@ -246,3 +246,18 @@ class ChampionshipHistory(models.Model):
 
 		self.updated_at = timezone.now()
 		return super(ChampionshipHistory, self).save(*args, **kwargs)
+
+class DraftHistory(models.Model):
+	brand = models.ForeignKey(Brand)
+	# TODO: change to arrayfield for postgresql
+	data = models.CharField(null=True, blank=True)
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
+	deleted_at = models.DateTimeField(null=True, blank=True)
+
+	def save(self, *args, **kwargs):
+		if not self.created_at:
+			self.created_at = timezone.now()
+
+		self.updated_at = timezone.now()
+		return super(DraftHistory, self).save(*args, **kwargs)
