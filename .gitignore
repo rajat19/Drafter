@@ -100,9 +100,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-# Database file
-*.sqlite3
-
 # All templates/test.html
 */*/*/test.html
 
@@ -112,6 +109,5 @@ ENV/
 
 # Private (production) data
 garbage/
-migrations
 private
 *.private.*

@@ -250,7 +250,7 @@ class ChampionshipHistory(models.Model):
 class DraftHistory(models.Model):
 	brand = models.ForeignKey(Brand)
 	# TODO: change to arrayfield for postgresql
-	data = models.CharField(null=True, blank=True)
+	data = models.CharField(null=True, blank=True, max_length=1000)
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
 	deleted_at = models.DateTimeField(null=True, blank=True)
