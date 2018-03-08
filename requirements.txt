@@ -1,0 +1,5 @@
+Django==1.9.7
+pandas==0.17.1
+django_heroku==0.3.1
+django_countries==5.0
+python-dotenv==0.8.2
