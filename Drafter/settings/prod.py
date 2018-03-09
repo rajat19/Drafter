@@ -1,7 +1,7 @@
 from .base import *
 import dj_database_url
 
-DEBUG = False
+DEBUG = os.environ.get('DEBUG') or False
 
 ALLOWED_HOSTS.append('draft-machine.herokuapp.com')
 
