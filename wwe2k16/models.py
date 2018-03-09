@@ -204,8 +204,8 @@ class Match(models.Model):
 		return super(Match, self).save(*args, **kwargs)
 
 class TagTeamMatch(models.Model):
-	TEAM1 = 1
-	TEAM2 = 2
+	TEAM1 = '1'
+	TEAM2 = '2'
 	WINNER_CHOICES = (
 		(TEAM1, 'Team 1'),
 		(TEAM2, 'Team 2'),
