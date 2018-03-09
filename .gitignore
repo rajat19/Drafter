@@ -111,3 +111,6 @@ ENV/
 garbage/
 private
 *.private.*
+
+# DB files
+*.sqlite3
