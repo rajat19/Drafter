@@ -1,6 +1,6 @@
 import random
 from django.core.management.base import BaseCommand
-from wwe2k16.models import Championship, Wrestler, Brand
+from wwe2k16.models import Championship, Wrestler, Brand, TemporaryDraft
 
 class Command(BaseCommand):
 	def _generate_draft(self):
@@ -44,22 +44,39 @@ class Command(BaseCommand):
 		nxt = [wc[2], exc[0], exc[1], exc[2]] + top[20:30] + sec[20:30] + rest[2*rest_count:3*rest_count]
 		legends = [wc[3], sc[2], ttc[4], ttc[5]] + top[30:] + sec[30:] + rest[3*rest_count:]
 
-		raw_brand = Brand.objects.filter(name__icontains = 'raw')
-		sd_brand = Brand.objects.filter(name__icontains = 'smack')
-		nxt_brand = Brand.objects.filter(name__icontains = 'nxt')
-		leg_brand = Brand.objects.filter(name__icontains = 'legend')
+		raw_brand = Brand.objects.get(name__icontains = 'raw')
+		sd_brand = Brand.objects.get(name__icontains = 'smack')
+		nxt_brand = Brand.objects.get(name__icontains = 'nxt')
+		leg_brand = Brand.objects.get(name__icontains = 'legend')
+		# for wrestler in raw:
+		# 	wrestler.brand = raw_brand
+		# 	wrestler.save()
+		# for wrestler in smackdown:
+		# 	wrestler.brand = sd_brand
+		# 	wrestler.save()
+		# for wrestler in nxt:
+		# 	wrestler.brand = nxt_brand
+		# 	wrestler.save()
+		# for wrestler in legends:
+		# 	wrestler.brand = leg_brand
+		# 	wrestler.save()
+		TemporaryDraft.objects.all().delete()
+		td = TemporaryDraft(brand=raw_brand)
+		td.save()
 		for wrestler in raw:
-			wrestler.brand = raw_brand
-			wrestler.save()
+			td.wrestlers.add(wrestler)
+		td = TemporaryDraft(brand=sd_brand)
+		td.save()
 		for wrestler in smackdown:
-			wrestler.brand = sd_brand
-			wrestler.save()
+			td.wrestlers.add(wrestler)
+		td = TemporaryDraft(brand=nxt_brand)
+		td.save()
 		for wrestler in nxt:
-			wrestler.brand = nxt_brand
-			wrestler.save()
+			td.wrestlers.add(wrestler)
+		td = TemporaryDraft(brand=leg_brand)
+		td.save()
 		for wrestler in legends:
-			wrestler.brand = leg_brand
-			wrestler.save()
+			td.wrestlers.add(wrestler)
 
 	def handle(self, *args, **kwargs):
 		self._generate_draft()
