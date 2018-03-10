@@ -9,15 +9,15 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_countries.widgets import CountrySelectWidget
 import json
 
-from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam, ChampionshipHistory
+from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
 from .forms import MatchForm, ChampionshipForm, TagTeamForm
 
-class IndexView(generic.ListView):
+class BrandsView(generic.ListView):
 	template_name = 'wwe2k16/brands.html'
 	context_object_name = 'all_brands'
 
 	def get_queryset(self):
-		return Brand.objects.all().order_by('created_at')
+		return Brand.objects.order_by('created_at')
 
 class BrandView(generic.DetailView):
 	model = Brand
@@ -42,7 +42,7 @@ class WrestlersView(generic.ListView):
 	context_object_name = 'all_wrestlers'
 
 	def get_queryset(self):
-		return Wrestler.objects.all().order_by('name')
+		return Wrestler.objects.order_by('name')
 
 class WrestlerView(generic.DetailView):
 	model = Wrestler
@@ -69,7 +69,7 @@ class TagTeamsView(generic.ListView):
 	context_object_name = 'all_tag_teams'
 
 	def get_queryset(self):
-		return TagTeam.objects.all().order_by('name')
+		return TagTeam.objects.order_by('name')
 
 class TagTeamView(generic.DetailView):
 	model = TagTeam
@@ -114,7 +114,7 @@ class EventsView(generic.ListView):
 	context_object_name = 'all_events'
 
 	def get_queryset(self):
-		return Event.objects.all().order_by('name')
+		return Event.objects.order_by('name')
 
 class EventView(generic.DetailView):
 	model = Event
@@ -139,7 +139,7 @@ class ChampionshipsView(generic.ListView):
 	context_object_name = 'all_championships'
 
 	def get_queryset(self):
-		return Championship.objects.all().order_by('created_at')
+		return Championship.objects.order_by('created_at')
 
 class ChampionshipView(generic.DetailView):
 	model = Championship
@@ -184,7 +184,7 @@ class MatchTypesView(generic.ListView):
 	context_object_name = 'all_match_types'
 
 	def get_queryset(self):
-		return MatchType.objects.all().order_by('name')
+		return MatchType.objects.order_by('name')
 
 class MatchTypeView(generic.DetailView):
 	model = MatchType
@@ -209,7 +209,7 @@ class MatchesView(generic.ListView):
 	context_object_name = 'all_matches'
 
 	def get_queryset(self):
-		return Match.objects.all().order_by('event')
+		return Match.objects.order_by('event')
 
 class MatchView(generic.DetailView):
 	model = Match
@@ -308,6 +308,18 @@ class TagTeamMatchCreate(View):
 				match.team2.add(participant)
 
 		return render(request, self.template_name, {'form': form})
+
+class DraftsView(View):
+	template_name = 'wwe2k16/draft.html'
+
+	def get(self, request):
+		# drafts = DraftHistory.objects.order_by('-created_at')
+		drafts = TemporaryDraft.objects.all()
+		return render(request, self.template_name, {'drafts': drafts})
+
+	def post(self, request):
+		call_command('draft')
+		return redirect('wwe2k16:drafts')
 
 def get_wrestlers(request):
 	mimetype = 'application/json'

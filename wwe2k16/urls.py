@@ -4,7 +4,10 @@ from . import views
 app_name = 'wwe2k16'
 
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='brands'),
+    url(r'^$', views.BrandsView.as_view(), name='brands'),
+
+    # /wwe2k16/brands
+    url(r'^brands/$', views.BrandsView.as_view(), name='brands'),
 
     # /wwe2k16/brand/raw
     url(r'^brand/(?P<slug>[\w-]+)$', views.BrandView.as_view(), name='brand'),
@@ -98,6 +101,8 @@ urlpatterns = [
 
     # /wwe2k16/match/tagteam/add
     url(r'^match/tagteam/add/$', views.TagTeamMatchCreate.as_view(), name='tagteammatch-add'),
+
+    url(r'^drafts/', views.DraftsView.as_view(), name='drafts'),
 
     # /wwe2k16/ajax/wrestlers
     url(r'^api/wrestlers/$', views.get_wrestlers, name='wrestlers-api'),
