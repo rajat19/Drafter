@@ -238,7 +238,7 @@ class ChampionshipHistory(models.Model):
 	deleted_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
-		verbose_name_plural = 'history'
+		verbose_name_plural = 'championship_history'
 
 	def save(self, *args, **kwargs):
 		if not self.created_at:
@@ -247,10 +247,29 @@ class ChampionshipHistory(models.Model):
 		self.updated_at = timezone.now()
 		return super(ChampionshipHistory, self).save(*args, **kwargs)
 
+# FIXME: Change structure
 class DraftHistory(models.Model):
+	name = models.CharField(max_length=200, null=True, blank=True)
 	brand = models.ForeignKey(Brand)
 	# TODO: change to arrayfield for postgresql
 	data = models.CharField(null=True, blank=True, max_length=1000)
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
+	deleted_at = models.DateTimeField(null=True, blank=True)
+
+	class Meta:
+		verbose_name_plural = 'draft_history'
+
+	def save(self, *args, **kwargs):
+		if not self.created_at:
+			self.created_at = timezone.now()
+
+		self.updated_at = timezone.now()
+		return super(DraftHistory, self).save(*args, **kwargs)
+
+class TemporaryDraft(models.Model):
+	brand = models.ForeignKey(Brand)
+	wrestlers = models.ManyToManyField(Wrestler, blank=True)
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
 	deleted_at = models.DateTimeField(null=True, blank=True)
@@ -260,4 +279,4 @@ class DraftHistory(models.Model):
 			self.created_at = timezone.now()
 
 		self.updated_at = timezone.now()
-		return super(DraftHistory, self).save(*args, **kwargs)
+		return super(TemporaryDraft, self).save(*args, **kwargs)
