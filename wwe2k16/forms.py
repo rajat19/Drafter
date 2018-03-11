@@ -30,8 +30,8 @@ class MatchForm(forms.ModelForm):
 		self.fields['event'].empty_label = ''
 		self.fields['championship'].empty_label = ''
 		self.fields['match_type'].empty_label = ''
-		self.fields['winner'] = forms.CharField(widget=forms.TextInput(attrs={'class': 'autocomplete'}))
+		self.fields['winner'] = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'autocomplete'}))
 
 	class Meta:
 		model = Match
-		fields = ['event', 'championship', 'match_type', 'participants', 'winner']
+		fields = ['event', 'championship', 'match_type', 'participants']
