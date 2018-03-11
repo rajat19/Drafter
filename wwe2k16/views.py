@@ -86,8 +86,8 @@ class TagTeamCreate(CreateView):
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
 		members_list = []
-		if u'members_list[]' in request_dict:
-			members_list = request_dict[u'members_list[]']
+		if 'members_list[]' in request_dict:
+			members_list = request_dict['members_list[]']
 		modified_members_list = [str(x) for x in members_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
@@ -156,8 +156,8 @@ class ChampionshipCreate(CreateView):
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
 		champions_list = []
-		if u'champions_list[]' in request_dict:
-			champions_list = request_dict[u'champions_list[]']
+		if 'champions_list[]' in request_dict:
+			champions_list = request_dict['champions_list[]']
 		modified_champions_list = [str(x) for x in champions_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
@@ -226,8 +226,8 @@ class MatchCreate(View):
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
 		participants_list = []
-		if u'participants_list[]' in request_dict:
-			participants_list = request_dict[u'participants_list[]']
+		if 'participants_list[]' in request_dict:
+			participants_list = request_dict['participants_list[]']
 		modified_participants_list = [str(x) for x in participants_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
@@ -235,6 +235,7 @@ class MatchCreate(View):
 			championship = match.championship
 			belt_type = championship.belt_type
 			old_champion = championship.champion.all()[0]
+			match.winner = Wrestler.objects.get(name = request_dict['new_champion'][0])
 			new_champion = match.winner
 			if belt_type == 'PR':
 				match.winner.primary += 1
@@ -246,15 +247,12 @@ class MatchCreate(View):
 				match.winner.tag_team += 1
 			match.winner.save()
 			match.save()
-
-			if old_champion.name != match.winner.name:
-				match.championship.champion.remove(old_champion)
-				match.championship.champion.add(new_champion)
-
-			championship_history = ChampionshipHistory(match=match)
-			championship_history.save()
-			championship_history.old_champion.add(old_champion)
-			championship_history.new_champion.add(new_champion)
+			match.championship.champion.set([new_champion])
+			if old_champion.name != new_champion.name:
+				championship_history = ChampionshipHistory(match=match)
+				championship_history.save()
+				championship_history.old_champion.add(old_champion)
+				championship_history.new_champion.add(new_champion)
 
 			for x in modified_participants_list:
 				participant = Wrestler.objects.get(name = x)
@@ -282,8 +280,8 @@ class TagTeamMatchCreate(View):
 	def post(self, request):
 		# TODO: update championship and its history
 		request_dict = dict(request.POST.lists())
-		team1_list = request_dict[u'team1_list[]']
-		team2_list = request_dict[u'team2_list[]']
+		team1_list = request_dict['team1_list[]']
+		team2_list = request_dict['team2_list[]']
 		modified_team1_list = [str(x) for x in team1_list]
 		modified_team2_list = [str(x) for x in team2_list]
 		form = self.form_class(request.POST)
@@ -295,10 +293,12 @@ class TagTeamMatchCreate(View):
 				winning_team = modified_team1_list
 			elif winner == 2:
 				winning_team = modified_team2_list
+			match.championship.champion.clear()
 			for x in winning_team:
 				wrestler = Wrestler.objects.get(name = x)
 				wrestler.tag_team += 1
 				wrestler.save()
+				match.championship.champion.add(wrestler)
 			match.save()
 			for x in modified_team1_list:
 				participant = Wrestler.objects.get(name = x)

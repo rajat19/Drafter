@@ -32,7 +32,6 @@
 		chipData.forEach(el => {
 			customData[el.tag] = null;
 		});
-		console.log(customData);
 		$('#id_winner').autocomplete({
 			data: customData,
 			minLength: 1,
@@ -74,13 +73,13 @@
 			const event = $('#id_event').val();
 			const championship = $('#id_championship').val();
 			const match_type = $('#id_match_type').val();
-			const winner = $('#id_winner').val();
+			const new_champion = $('#id_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
 			$.post("/wwe2k16/match/add/", {
 				event,
 				championship,
 				match_type,
-				winner,
+				new_champion,
 				csrfmiddlewaretoken,
 				participants_list: options,
 			},

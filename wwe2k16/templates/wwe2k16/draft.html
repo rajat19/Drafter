@@ -3,14 +3,20 @@
 {% block no-container %}
 	<section>
 		<div class="row">
-			<form action="" method="POST">
-			{% csrf_token %}
 			<div class="input-field col s12">
-				<button class="btn waves-effect waves-light black lighten-1" id="generate" type="submit">Generate
-						<i class="material-icons">add</i>
+				<form action="" method="POST">
+					{% csrf_token %}
+					<button class="btn waves-effect waves-light black lighten-1" id="generate" type="submit">Generate
+						<span><i class="fa fa-cog"></i></span>
+					</button>
+				</form>
+				<button class="btn waves-effect waves-light green lighten-1" id="saveDraft">Save
+					<span><i class="fa fa-save"></i></span>
+				</button>
+				<button class="btn waves-effect waves-light red lighten-1" id="deleteDraft">Delete
+					<span><i class="fa fa-trash-o"></i></span>
 				</button>
 			</div>
-			</form>
 		</div>
 		<div class="row">
 		{% for draft in drafts %}
@@ -50,16 +56,25 @@
 
 {% block script %}
 <script>
-	// $(document).ready(() => {
-	// 	$('#generate').click((e) => {
-	// 		const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-	// 		$.post("/wwe2k16/draft/", {
-	// 			csrfmiddlewaretoken
-	// 		},
-	// 		function(response, status) {
-	// 			console.log(response);
-	// 		});
-	// 	});
-	// });
+	$(document).ready(() => {
+		$('#saveDraft').click((e) => {
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe2k16/drafthistory/create", {
+				csrfmiddlewaretoken
+			},
+			function(response, status) {
+				console.log(response);
+			});
+		});
+		$('#deleteDraft').click((e) => {
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe2k16/drafthistory/delete", {
+				csrfmiddlewaretoken
+			},
+			function(response, status) {
+				console.log(response);
+			});
+		});
+	});
 </script>
 {% endblock %}
