@@ -1,6 +1,6 @@
 from django.core.management import call_command
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views import generic
@@ -96,9 +96,15 @@ class TagTeamCreate(CreateView):
 			for x in modified_members_list:
 				member = Wrestler.objects.get(name = x)
 				tag_team.members.add(member)
-
-		# FIXME: return a json response instead of sending render
-		return render(request, self.template_name, {'form': form})
+			data = {
+				'result': 1,
+				'message': 'Successfully added the tag team',
+			}
+		else: data = {
+				'result': 0,
+				'errors': json.loads(form.errors.as_json()),
+			}
+		return JsonResponse(data)
 
 class TagTeamDelete(DeleteView):
 	model = TagTeam
@@ -166,10 +172,16 @@ class ChampionshipCreate(CreateView):
 			for x in modified_champions_list:
 				champion = Wrestler.objects.get(name = x)
 				championship.champion.add(champion)
-
-		# FIXME: return a json response instead of sending render
-		return render(request, self.template_name, {'form': form})
-
+			data = {
+				'result': 1,
+				'message': 'Successfully added the championship',
+			}
+		else: data = {
+				'result': 0,
+				'errors': json.loads(form.errors.as_json()),
+			}
+		return JsonResponse(data)
+		
 class ChampionshipDelete(DeleteView):
 	model = Championship
 	success_url = reverse_lazy('wwe2k16:championships')
@@ -258,7 +270,15 @@ class MatchCreate(View):
 				participant = Wrestler.objects.get(name = x)
 				match.participants.add(participant)
 
-		return render(request, self.template_name, {'form': form})
+			data = {
+				'result': 1,
+				'message': 'Successfully added the match',
+			}
+		else: data = {
+				'result': 0,
+				'errors': json.loads(form.errors.as_json()),
+			}
+		return JsonResponse(data)
 
 class MatchDelete(DeleteView):
 	model = Match
@@ -306,8 +326,16 @@ class TagTeamMatchCreate(View):
 			for x in modified_team2_list:
 				participant = Wrestler.objects.get(name = x)
 				match.team2.add(participant)
-
-		return render(request, self.template_name, {'form': form})
+			
+			data = {
+				'result': 1,
+				'message': 'Successfully added the tag team',
+			}
+		else: data = {
+				'result': 0,
+				'errors': json.loads(form.errors.as_json()),
+			}
+		return JsonResponse(data)
 
 class DraftsView(View):
 	template_name = 'wwe2k16/draft.html'
@@ -329,7 +357,6 @@ def get_wrestlers(request):
 		results = []
 		for wrestler in wrestlers:
 			results.append(wrestler.name)
-		data = json.dumps(results)
 	else:
-		data = 'fail'
-	return HttpResponse(data, mimetype)
+		results = 'fail'
+	return JsonResponse(results, safe=False)

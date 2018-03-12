@@ -20,7 +20,7 @@ class TagTeamForm(forms.ModelForm):
 class ChampionshipForm(forms.ModelForm):
 	class Meta:
 		model = Championship
-		fields = ['name', 'belt_type', 'champion']
+		fields = ['name', 'belt_type', 'status', 'champion']
 
 class MatchForm(forms.ModelForm):
 	fields = ['event', 'championship', 'match_type', 'participants', 'winner']
