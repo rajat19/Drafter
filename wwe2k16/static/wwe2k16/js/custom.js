@@ -1,4 +1,49 @@
-$(document).ready(function() {
+function capitalize(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function getWrestlersData(ids) {
+	$.ajax({
+		type: 'GET',
+		url: '/wwe2k16/api/wrestlers/',
+		success: function(response) {
+			var customData = {};
+			response.forEach(el => {
+				customData[el] = null;
+			});
+			if (!Array.isArray(ids)) {
+				ids = [ids];
+			}
+			for(var id in ids) {
+				$(`#id_${id}`).material_chip({
+					autocompleteOptions: {
+						data: customData,
+						limit: Infinity,
+						minLength: 1,
+					}
+				});
+			}
+		}
+	});
+}
+
+function handleResponse(response) {
+	if(response.result == 1) {
+		Materialize.toast(response.message, 3000, 'rounded')
+	}
+	else {
+		e = response.errors;
+		$('#error-parent').css('display', 'block');
+		var html = ''
+		for(k in e) {
+			var s = `${capitalize(k)}: ${e[k][0].message}`;
+			var html = `${html}<strong>${s}</strong>`;
+		}
+		$('#error').html(html);
+	}
+}
+
+function initializeClasses() {
 	Materialize.updateTextFields();
 	$(".button-collapse").off("click").sideNav();
 	$('#sidenav-overlay').remove();
@@ -17,30 +62,8 @@ $(document).ready(function() {
 		hiddenName: true,
 	});
 	$('.chips').material_chip();
+}
 
-	// $('.timepicker').pickatime({
-	//     default: 'now',
-	//     twelvehour: false, // change to 12 hour AM/PM clock from 24 hour
-	//     donetext: 'Done',
-	//     darktheme: true,
-	//   	autoclose: false,
-	//   	vibrate: true // vibrate the device when dragging clock hand
-	// });
-
-	// $('#pagination-short').materializePagination({
-	// 	align: 'center',
-	// 	lastPage:  3,
-	// 	firstPage:  1,
-	// 	useUrlParameter: true,
-	// });
-
-	// $('#pagination-long').materializePagination({
-	// 	align: 'center',
-	// 	lastPage:  10,
-	// 	firstPage:  1,
-	// 	useUrlParameter: false,
-	// 	onClickCallback: function(requestedPage){
-	// 		console.log('Requested page from #pagination-long: '+ requestedPage);
-	// 	}
-	// });
+$(document).ready(() => {
+	initializeClasses();
 });
