@@ -10,7 +10,9 @@
 						<span class="card-title">Add New Championship</span>
 						{% csrf_token %}
 						{% include 'wwe2k16/forms/template.html' %}
-						{% include 'wwe2k16/forms/error.html' %}
+						<div class="card z-depth-3 red" id="error-parent" style="display: none;">
+							<div class="card-content" id="error"></div>
+						</div>
 						<div class="row">
 							<div class="input-field col s12">
 								<button class="btn waves-effect waves-light green lighten-1" id="submit">Add Championship
@@ -27,25 +29,7 @@
 {% block script %}
 <script>
 	$(document).ready(() => {
-		$(() => {
-			$.ajax({
-				type: 'GET',
-				url: '/wwe2k16/api/wrestlers/',
-				success: function(response) {
-					var customData = {};
-					response.forEach(el => {
-						customData[el] = null;
-					});
-					$('#id_champion').material_chip({
-						autocompleteOptions: {
-							data: customData,
-							limit: Infinity,
-							minLength: 1,
-						}
-					});
-				}
-			});
-		});
+		getWrestlersData('champion');
 		$('#submit').click((e) => {
 			const chipData = $('#id_champion').material_chip('data');
 			const options = [];
@@ -58,8 +42,8 @@
 			$.post("/wwe2k16/championship/add/", {
 				name, csrfmiddlewaretoken, belt_type, champions_list: options,
 			},
-			function(response, status) {
-				console.log(response);
+			(response, status) => {
+				handleResponse(response);
 			});
 		});
 	});

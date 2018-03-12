@@ -10,7 +10,9 @@
 						<span class="card-title">Add New Match</span>
 						{% csrf_token %}
 						{% include 'wwe2k16/forms/template.html' %}
-						{% include 'wwe2k16/forms/error.html' %}
+						<div class="card z-depth-3 red" id="error-parent" style="display: none;">
+							<div class="card-content" id="error"></div>
+						</div>
 						<div class="row">
 							<div class="input-field col s12">
 								<button class="btn waves-effect waves-light green lighten-1" id="submit">Add Match
@@ -39,25 +41,7 @@
 	}
 
 	$(document).ready(() => {
-		$(() => {
-			$.ajax({
-				type: 'GET',
-				url: '/wwe2k16/api/wrestlers/',
-				success: function(response) {
-					var customData = {};
-					response.forEach(el => {
-						customData[el] = null;
-					});
-					$('#id_participants').material_chip({
-						autocompleteOptions: {
-							data: customData,
-							limit: Infinity,
-							minLength: 1,
-						}
-					});
-				}
-			});
-		});
+		getWrestlersData('participants');
 		$('#id_participants').on('chip.add', (e, chip) => {
 			setAutocompleteData();
 		});
@@ -83,8 +67,8 @@
 				csrfmiddlewaretoken,
 				participants_list: options,
 			},
-			function(response, status) {
-				console.log(response);
+			(response, status) => {
+				handleResponse(response);
 			});
 		});
 	});
