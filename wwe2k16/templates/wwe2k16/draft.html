@@ -9,16 +9,16 @@
 					<button class="btn waves-effect waves-light black lighten-1" id="generate" type="submit">Generate
 						<span><i class="fa fa-cog"></i></span>
 					</button>
+					<a class="btn waves-effect waves-light green lighten-1" id="saveDraft">Save
+						<span><i class="fa fa-save"></i></span>
+					</a>
+					<a class="btn waves-effect waves-light red lighten-1" id="deleteDraft">Delete
+						<span><i class="fa fa-trash-o"></i></span>
+					</a>
 				</form>
-				<button class="btn waves-effect waves-light green lighten-1" id="saveDraft">Save
-					<span><i class="fa fa-save"></i></span>
-				</button>
-				<button class="btn waves-effect waves-light red lighten-1" id="deleteDraft">Delete
-					<span><i class="fa fa-trash-o"></i></span>
-				</button>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" id="drafts">
 		{% for draft in drafts %}
 			<div class="col m3 s12 center">
 				<a href="#!" class="white-text">
@@ -68,11 +68,22 @@
 		});
 		$('#deleteDraft').click((e) => {
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-			$.post("/wwe2k16/drafthistory/delete", {
-				csrfmiddlewaretoken
-			},
-			function(response, status) {
-				console.log(response);
+			swal({
+				title: "Reject Draft",
+				text: "Are you sure about clearing latest draft ?",
+				type: "warning",
+				showCancelButton: true,
+				showLoaderOnConfirm: true,
+				confirmButtonText: 'Yes, delete it!',
+			}).then((result) => {
+					$.post("/wwe2k16/draft/delete", {
+						csrfmiddlewaretoken
+					},
+					function(response, status) {
+						if (response === 'deleted') {
+							$('#drafts').html('');
+						}
+					});
 			});
 		});
 	});

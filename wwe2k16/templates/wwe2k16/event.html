@@ -1,0 +1,60 @@
+{% extends 'wwe2k16/base.html' %}
+
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block body %}
+{% load template_extras %}
+{% assign brandColor black %}
+	<section>
+		<div class="row">
+			<div class="col s12">
+				<div class="card z-depth-5">
+					{% if event.brand %}
+					<div class="card-content {{event.brand.color}}">
+					{% else %}
+					<div class="card-content {{brandColor.value}}">
+					{% endif %}
+						<span class="card-title center">{{event.name}}</span>
+						<div class="row">
+							<table>
+								<tr class="card z-depth-5">
+									<div class="card-content">
+										<td>Championship</td>
+										<td colspan="3">Participants</td>
+									</div>
+								</tr>
+								{% for match in event.match_set.all %}
+								<tr class="card z-depth-5">
+									<div class="card-content">
+										<td>{{match.championship}}</td>
+										<td>
+											{% for wrestler in match.participants.all %}
+												{{wrestler}}
+											{% endfor %}
+										</td>
+									</div>
+								</tr>
+								{% endfor %}
+								{% for match in event.tag_team_match_set.all %}
+								<tr class="card z-depth-5">
+									<div class="card-content">
+										<td>{{match.championship}}</td>
+										<td>
+											{% for wrestler in match.team1.all %}
+												{{wrestler}}
+											{% endfor %}
+											{% for wrestler in match.team2.all %}
+												{{wrestler}}
+											{% endfor %}
+										</td>
+									</div>
+								</tr>
+								{% endfor %}
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
