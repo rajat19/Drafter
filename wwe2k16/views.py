@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.core.urlresolvers import reverse_lazy
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, resolve_url
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import View
@@ -313,6 +313,10 @@ class TagTeamMatchCreate(View):
 				winning_team = modified_team1_list
 			elif winner == 2:
 				winning_team = modified_team2_list
+			old_champions = match.championship.champion.all()
+			old_champ_names = []
+			for x in old_champions:
+				old_champ_names.append(x.name)
 			match.championship.champion.clear()
 			for x in winning_team:
 				wrestler = Wrestler.objects.get(name = x)
@@ -320,6 +324,14 @@ class TagTeamMatchCreate(View):
 				wrestler.save()
 				match.championship.champion.add(wrestler)
 			match.save()
+			if (bool(set(old_champ_names).intersection(winning_team)) == False):
+				championship_history = ChampionshipHistory(match=match)
+				championship_history.save()
+				for x in old_champions:
+					championship_history.old_champion.add(x)
+				for x in winning_team:
+					wrestler = Wrestler.objects.get(name = x)
+					championship_history.new_champion.add(x)
 			for x in modified_team1_list:
 				participant = Wrestler.objects.get(name = x)
 				match.team1.add(participant)
@@ -329,7 +341,7 @@ class TagTeamMatchCreate(View):
 			
 			data = {
 				'result': 1,
-				'message': 'Successfully added the tag team',
+				'message': 'Successfully added the tag team match',
 			}
 		else: data = {
 				'result': 0,
@@ -348,6 +360,16 @@ class DraftsView(View):
 	def post(self, request):
 		call_command('draft')
 		return redirect('wwe2k16:drafts')
+
+class DraftDelete(View):
+	def post(self, request):
+		print('deleteign')
+		deleted = TemporaryDraft.objects.all().delete()
+		message = ''
+		if deleted:
+			message = 'deleted'
+		else: message = 'failed'
+		return JsonResponse(message, safe=False)
 
 def get_wrestlers(request):
 	mimetype = 'application/json'
