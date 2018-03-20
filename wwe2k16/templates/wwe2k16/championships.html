@@ -4,14 +4,18 @@
 	<section>
 		<div class="row">
 		{% for championship in all_championships %}
-			<div class="col m6 s12 center">
-				<a href="{% url 'wwe2k16:championship' championship.slug %}" class="gray-text">
-					<div class="card z-depth-5">
-						<div class="card-content black white-text">
+			<div class="col m6 s12 center" id="championship-{{championship.slug}}">
+				<div class="card z-depth-5">
+					<div class="card-content black white-text">
+						<a href="{% url 'wwe2k16:championship' championship.slug %}" class="gray-text">
 							<span class="card-title">{{championship.name}}</span>
-						</div>
+						</a>
+						{% csrf_token %}
+						<button class="btn-floating halfway-fab waves-effect waves-light white"  onclick="confirmDelete('championship', '{{championship.slug}}')">
+							<i class="material-icons black-text">delete</i>
+						</button>
 					</div>
-				</a>
+				</div>
 			</div>
 		{% endfor %}
 		</div>

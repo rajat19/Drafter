@@ -43,6 +43,28 @@ function handleResponse(response) {
 	}
 }
 
+function confirmDelete(type, slug) {
+	const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+	swal({
+		title: "Confirm Deletion",
+		text: `Are you sure about deleting ${slug} ?`,
+		type: "warning",
+		showCancelButton: true,
+		showLoaderOnConfirm: true,
+		confirmButtonText: 'Yes, delete it!',
+	}).then((result) => {
+		$.post(`/wwe2k16/${type}/delete/`, {
+			csrfmiddlewaretoken,
+			slug,
+		},
+		function(response, status) {
+			if (response === 'deleted') {
+				$(`#${type}-${slug}`).html('');
+			}
+		});
+	});
+}
+
 function initializeClasses() {
 	Materialize.updateTextFields();
 	$(".button-collapse").off("click").sideNav();
