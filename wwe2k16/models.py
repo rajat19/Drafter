@@ -118,13 +118,10 @@ class Wrestler(SoftDeletionModel):
 		self.slug = slugify(self.name)
 		return super(Wrestler, self).save(*args, **kwargs)
 
-class TagTeam(models.Model):
+class TagTeam(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250, unique=True)
 	members = models.ManyToManyField(Wrestler)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
 		verbose_name_plural = 'tagteams'
@@ -136,14 +133,10 @@ class TagTeam(models.Model):
 		return reverse('wwe2k16:tagteam', kwargs={'slug': self.slug})
 
 	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-		
 		self.slug = slugify(self.name)
-		self.updated_at = timezone.now()
 		return super(TagTeam, self).save(*args, **kwargs)
 
-class Championship(models.Model):
+class Championship(SoftDeletionModel):
 	PRIMARY = 'PR'
 	SECONDARY = 'SE'
 	TERTIARY = 'TE'
@@ -159,9 +152,6 @@ class Championship(models.Model):
 	belt_type = models.CharField(choices=BELT_TYPE_CHOICES, max_length=2, default=PRIMARY)
 	status = models.BooleanField(choices=STATUS_CHOICES, default=ACTIVE)
 	champion = models.ManyToManyField(Wrestler, blank=True, default='')
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
 
 	def __str__(self):
 		return self.name
@@ -173,21 +163,14 @@ class Championship(models.Model):
 		return reverse('wwe2k16:championship', kwargs={'slug': self.slug})
 
 	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
 		self.slug = slugify(self.name)
-		self.updated_at = timezone.now()
 		return super(Championship, self).save(*args, **kwargs)
 
-class Event(models.Model):
+class Event(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250)
 	year = models.CharField(max_length=4)
 	brand = models.ForeignKey(Brand, blank=True, default='', null=True)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
 		unique_together = ['name', 'year']
@@ -199,20 +182,13 @@ class Event(models.Model):
 		return reverse('wwe2k16:event', kwargs={'slug': self.slug})
 
 	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
 		self.slug = slugify(self.__str__)
-		self.updated_at = timezone.now()
 		return super(Event, self).save(*args, **kwargs)
 
-class MatchType(models.Model):
+class MatchType(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250, unique=True)
 	no_of_participants = models.PositiveIntegerField(default=2)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
 
 	def __str__(self):
 		return self.name
@@ -221,34 +197,20 @@ class MatchType(models.Model):
 		return reverse('wwe2k16:matchtype-add')
 
 	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
 		self.slug = slugify(self.name)
-		self.updated_at = timezone.now()
 		return super(MatchType, self).save(*args, **kwargs)
 
-class Match(models.Model):
+class Match(TimestampModel):
 	event = models.ForeignKey(Event, on_delete=models.CASCADE)
 	championship = models.ForeignKey(Championship, null=True, blank=True)
 	match_type = models.ForeignKey(MatchType, blank=True, default='')
 	participants = models.ManyToManyField(Wrestler, blank=True, related_name='participants')
 	winner = models.ForeignKey(Wrestler, blank=True, related_name='winner', null=True)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
 		verbose_name_plural = 'matches'
 
-	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
-		self.updated_at = timezone.now()
-		return super(Match, self).save(*args, **kwargs)
-
-class TagTeamMatch(models.Model):
+class TagTeamMatch(TimestampModel):
 	TEAM1 = '1'
 	TEAM2 = '2'
 	WINNER_CHOICES = (
@@ -260,41 +222,21 @@ class TagTeamMatch(models.Model):
 	team1 = models.ManyToManyField(Wrestler, related_name='team1')
 	team2 = models.ManyToManyField(Wrestler, related_name='team2')
 	winner = models.PositiveSmallIntegerField(choices=WINNER_CHOICES, default=TEAM1)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
-
+	
 	class Meta:
 		verbose_name_plural = 'tag_team_matches'
 
-	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
-		self.updated_at = timezone.now()
-		return super(TagTeamMatch, self).save(*args, **kwargs)
-
-class ChampionshipHistory(models.Model):
+class ChampionshipHistory(TimestampModel):
 	match = models.ForeignKey(Match, null=True, blank=True)
 	old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='old_champion')
 	new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='new_champion')
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
-
+	
 	class Meta:
 		verbose_name_plural = 'championship_history'
 
-	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
-		self.updated_at = timezone.now()
-		return super(ChampionshipHistory, self).save(*args, **kwargs)
-
 # FIXME: Change structure
 class DraftHistory(models.Model):
-	name = models.CharField(max_length=200, null=True, blank=True)
+	year = models.CharField(max_length=200, null=True, blank=True)
 	brand = models.ForeignKey(Brand)
 	# TODO: change to arrayfield for postgresql
 	data = models.CharField(null=True, blank=True, max_length=1000)
