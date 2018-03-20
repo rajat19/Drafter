@@ -27,7 +27,7 @@ function getWrestlersData(ids) {
 	});
 }
 
-function handleResponse(response) {
+function handleFormResponse(response) {
 	if(response.result == 1) {
 		Materialize.toast(response.message, 3000, 'rounded')
 	}
