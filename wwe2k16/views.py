@@ -5,12 +5,16 @@ from django.shortcuts import render, redirect, resolve_url
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import View
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_countries.widgets import CountrySelectWidget
 import json
 
 from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
 from .forms import MatchForm, ChampionshipForm, TagTeamForm
+
+class IndexView(TemplateView):
+	template_name='wwe2k16/index.html'
 
 class BrandsView(generic.ListView):
 	template_name = 'wwe2k16/brands.html'

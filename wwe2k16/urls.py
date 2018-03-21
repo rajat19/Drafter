@@ -4,7 +4,7 @@ from . import views
 app_name = 'wwe2k16'
 
 urlpatterns = [
-    url(r'^$', views.BrandsView.as_view(), name='brands'),
+    url(r'^$', views.IndexView.as_view(), name='home'),
 
     # /wwe2k16/brands
     url(r'^brands/$', views.BrandsView.as_view(), name='brands'),

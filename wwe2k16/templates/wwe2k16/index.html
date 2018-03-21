@@ -1,0 +1,64 @@
+{% extends 'wwe2k16/base.html' %}
+
+{% block body %}
+	<section>
+		<div class="row center">
+			<h2>Welcome to Draft Machine</h2>
+			<h3>Go check out any of the following</h3>
+			<div class="col m4 s12 center">
+				<div class="card z-depth-5">
+					<div class="card-content red">
+						<a href="{% url 'wwe2k16:brands' %}" class="white-text">
+							<span class="card-title">Brands</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col m4 s12 center">
+				<div class="card z-depth-5">
+					<div class="card-content green">
+						<a href="{% url 'wwe2k16:wrestlers' %}" class="white-text">
+							<span class="card-title">Superstars</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col m4 s12 center">
+				<div class="card z-depth-5">
+					<div class="card-content blue">
+						<a href="{% url 'wwe2k16:tagteams' %}" class="white-text">
+							<span class="card-title">Tag Teams</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col m4 s12 center">
+				<div class="card z-depth-5">
+					<div class="card-content orange">
+						<a href="{% url 'wwe2k16:events' %}" class="white-text">
+							<span class="card-title">Events</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col m4 s12 center">
+				<div class="card z-depth-5">
+					<div class="card-content purple">
+						<a href="{% url 'wwe2k16:championships' %}" class="white-text">
+							<span class="card-title">Championships</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="col m4 s12 center">
+				<div class="card z-depth-5">
+					<div class="card-content brown">
+						<a href="{% url 'wwe2k16:drafts' %}" class="white-text">
+							<span class="card-title">Draft Lottery</span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
