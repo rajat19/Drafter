@@ -36,7 +36,6 @@ class BrandDelete(View):
 			slug = request_dict['slug'][0]
 			Brand.objects.get(slug=slug).delete()
 			message = 'deleted'
-		print message
 		return JsonResponse(message, safe=False)
 
 class BrandUpdate(UpdateView):
@@ -69,7 +68,6 @@ class WrestlerDelete(DeleteView):
 			slug = request_dict['slug'][0]
 			Wrestler.objects.get(slug=slug).delete()
 			message = 'deleted'
-		print message
 		return JsonResponse(message, safe=False)
 
 class WrestlerUpdate(UpdateView):
@@ -128,7 +126,6 @@ class TagTeamDelete(DeleteView):
 			slug = request_dict['slug'][0]
 			TagTeam.objects.get(slug=slug).delete()
 			message = 'deleted'
-		print message
 		return JsonResponse(message, safe=False)
 
 class TagTeamUpdate(UpdateView):
@@ -160,7 +157,6 @@ class EventDelete(DeleteView):
 			slug = request_dict['slug'][0]
 			Event.objects.get(slug=slug).delete()
 			message = 'deleted'
-		print message
 		return JsonResponse(message, safe=False)
 
 class EventUpdate(UpdateView):
@@ -218,7 +214,6 @@ class ChampionshipDelete(DeleteView):
 			slug = request_dict['slug'][0]
 			Championship.objects.get(slug=slug).delete()
 			message = 'deleted'
-		print message
 		return JsonResponse(message, safe=False)
 
 class ChampionshipUpdate(UpdateView):
@@ -250,7 +245,6 @@ class MatchTypeDelete(DeleteView):
 			slug = request_dict['slug'][0]
 			MatchType.objects.get(slug=slug).delete()
 			message = 'deleted'
-		print message
 		return JsonResponse(message, safe=False)
 
 class MatchTypeUpdate(UpdateView):
