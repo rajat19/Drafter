@@ -1,4 +1,4 @@
-from .models import Wrestler, TagTeam, Championship, Event, Match, MatchType
+from .models import Wrestler, TagTeam, Championship, Event, Match, TagTeamMatch, MatchType
 from django import forms, template
 
 class WrestlerForm(forms.ModelForm):
@@ -35,3 +35,15 @@ class MatchForm(forms.ModelForm):
 	class Meta:
 		model = Match
 		fields = ['event', 'championship', 'match_type', 'participants']
+
+class TagMatchForm(forms.ModelForm):
+	fields = ['event', 'championship', 'team1', 'team2', 'winner']
+
+	def __init__(self, *args, **kwargs):
+		super(TagMatchForm, self).__init__(*args, **kwargs)
+		self.fields['event'].empty_label = ''
+		self.fields['championship'].empty_label = ''
+
+	class Meta:
+		model = TagTeamMatch
+		fields = ['event', 'championship', 'team1', 'team2', 'winner']

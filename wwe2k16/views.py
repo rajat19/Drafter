@@ -11,7 +11,7 @@ from django_countries.widgets import CountrySelectWidget
 import json
 
 from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
-from .forms import MatchForm, ChampionshipForm, TagTeamForm
+from .forms import MatchForm, ChampionshipForm, TagTeamForm, TagMatchForm
 
 class IndexView(TemplateView):
 	template_name='wwe2k16/index.html'
@@ -144,9 +144,21 @@ class EventsView(generic.ListView):
 	def get_queryset(self):
 		return Event.objects.order_by('name')
 
-class EventView(generic.DetailView):
+class EventView(View):
 	model = Event
 	template_name = 'wwe2k16/event.html'
+	match_form_class = MatchForm
+	tag_match_form_class = TagMatchForm
+	def get(self, request, *args, **kwargs):
+		match_form = self.match_form_class(None)
+		tag_match_form = self.tag_match_form_class(None)
+		slug = kwargs['slug']
+		event = Event.objects.get(slug=slug)
+		return render(request, self.template_name, {
+			'event': event,
+			'match_form': match_form,
+			'tag_match_form': tag_match_form,
+		})
 
 class EventCreate(CreateView):
 	model = Event
@@ -330,7 +342,7 @@ class MatchUpdate(UpdateView):
 	template_name = 'wwe2k16/forms/update/match.html'
 
 class TagTeamMatchCreate(View):
-	form_class = MatchForm
+	form_class = TagMatchForm
 	template_name = 'wwe2k16/forms/create/tag_team_match.html'
 
 	def get(self, request):
