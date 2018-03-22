@@ -106,10 +106,10 @@ urlpatterns = [
     url(r'^drafts/', views.DraftsView.as_view(), name='drafts'),
 
     # /wwe2k16/drafthistory/save
-    url(r'^drafthistory/create', views.DraftsView.as_view(), name='drafthistorey-add'),
+    url(r'^drafthistory/create/$', views.DraftHistoryCreate.as_view(), name='drafthistory-add'),
 
     # /wwe2k16/draft/delete
-    url(r'^draft/delete', views.DraftDelete.as_view(), name='draft-delete'),
+    url(r'^draft/delete/$', views.DraftDelete.as_view(), name='draft-delete'),
 
     # /wwe2k16/ajax/wrestlers
     url(r'^api/wrestlers/$', views.get_wrestlers, name='wrestlers-api'),

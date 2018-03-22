@@ -9,9 +9,9 @@
 					<button class="btn waves-effect waves-light black lighten-1" id="generate" type="submit">Generate
 						<span><i class="fa fa-cog"></i></span>
 					</button>
-					<a class="btn waves-effect waves-light green lighten-1" id="saveDraft">Save
+					<button class="btn modal-trigger waves-effect waves-light green lighten-1" data-target="modalDraftName">Save
 						<span><i class="fa fa-save"></i></span>
-					</a>
+					</button>
 					<a class="btn waves-effect waves-light red lighten-1" id="deleteDraft">Delete
 						<span><i class="fa fa-trash-o"></i></span>
 					</a>
@@ -50,6 +50,18 @@
 				</a>
 			</div>
 		{% endfor %}
+			<div id="modalDraftName" class="modal">
+				<div class="modal-content">
+					<h4>Draft Name</h4>
+					<p>Please enter a name for draft</p>
+					<input type="text" id="drftname">
+				</div>
+				<div class="modal-footer">
+					<a class="btn modal-action modal-close waves-effect waves-light green lighten-1" id="saveDraft">Save
+						<span><i class="fa fa-save"></i></span>
+					</a>
+				</div>
+			</div>
 		</div>
 	</section>
 {% endblock %}
@@ -59,11 +71,16 @@
 	$(document).ready(() => {
 		$('#saveDraft').click((e) => {
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-			$.post("/wwe2k16/drafthistory/create", {
-				csrfmiddlewaretoken
+			const name = $('#drftname').val();
+			if (name == '') {
+				Materialize.toast('Please enter name for draft', 4000);
+			}
+			$.post("/wwe2k16/drafthistory/create/", {
+				csrfmiddlewaretoken,
+				name,
 			},
 			function(response, status) {
-				console.log(response);
+				Materialize.toast(response, 4000);
 			});
 		});
 		$('#deleteDraft').click((e) => {
@@ -76,7 +93,7 @@
 				showLoaderOnConfirm: true,
 				confirmButtonText: 'Yes, delete it!',
 			}).then((result) => {
-					$.post("/wwe2k16/draft/delete", {
+					$.post("/wwe2k16/draft/delete/", {
 						csrfmiddlewaretoken
 					},
 					function(response, status) {

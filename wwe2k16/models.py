@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.query import QuerySet
@@ -234,36 +235,19 @@ class ChampionshipHistory(TimestampModel):
 	class Meta:
 		verbose_name_plural = 'championship_history'
 
-# FIXME: Change structure
-class DraftHistory(models.Model):
-	year = models.CharField(max_length=200, null=True, blank=True)
+class DraftHistory(SoftDeletionModel):
+	name = models.CharField(max_length=200, null=True, blank=True)
 	brand = models.ForeignKey(Brand)
-	# TODO: change to arrayfield for postgresql
-	data = models.CharField(null=True, blank=True, max_length=1000)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
+	data = ArrayField(
+		models.CharField(null=True, blank=True, max_length=1000),
+		size=50,
+		null=True
+	)
 
 	class Meta:
 		verbose_name_plural = 'draft_history'
+		unique_together = ['name', 'brand']
 
-	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
-		self.updated_at = timezone.now()
-		return super(DraftHistory, self).save(*args, **kwargs)
-
-class TemporaryDraft(models.Model):
+class TemporaryDraft(TimestampModel):
 	brand = models.ForeignKey(Brand)
 	wrestlers = models.ManyToManyField(Wrestler, blank=True)
-	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
-	deleted_at = models.DateTimeField(null=True, blank=True)
-
-	def save(self, *args, **kwargs):
-		if not self.created_at:
-			self.created_at = timezone.now()
-
-		self.updated_at = timezone.now()
-		return super(TemporaryDraft, self).save(*args, **kwargs)

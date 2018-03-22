@@ -388,11 +388,34 @@ class TagTeamMatchCreate(View):
 			}
 		return JsonResponse(data)
 
+class DraftHistoryCreate(View):
+	def post(self, request):
+		temp_draft = TemporaryDraft.objects.all()
+		request_dict = dict(request.POST.lists())
+		name = 'Draft New'
+		message = ''
+		try:
+			if 'name' in request_dict:
+				name = request_dict['name'][0]
+			for draft in temp_draft:
+				wrestler_list = []
+				for wrestler in draft.wrestlers.all():
+					wrestler_list.append(wrestler.name)
+				new_draft = DraftHistory(
+					name=name,
+					brand = draft.brand,
+					data=wrestler_list,
+				)
+				new_draft.save()
+			message = 'Saved draft history'
+		except:
+			message = 'Some error while saving draft history'
+		return JsonResponse(message, safe=False)
+
 class DraftsView(View):
 	template_name = 'wwe2k16/draft.html'
 
 	def get(self, request):
-		# drafts = DraftHistory.objects.order_by('-created_at')
 		drafts = TemporaryDraft.objects.all()
 		return render(request, self.template_name, {'drafts': drafts})
 
@@ -402,7 +425,6 @@ class DraftsView(View):
 
 class DraftDelete(View):
 	def post(self, request):
-		print('deleteign')
 		deleted = TemporaryDraft.objects.all().delete()
 		message = ''
 		if deleted:
