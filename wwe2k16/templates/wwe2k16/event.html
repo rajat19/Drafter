@@ -3,58 +3,171 @@
 {% block title %}{{ event.name }}{% endblock %}
 
 {% block body %}
-{% load template_extras %}
-{% assign brandColor black %}
-	<section>
-		<div class="row">
-			<div class="col s12">
-				<div class="card z-depth-5">
-					{% if event.brand %}
-					<div class="card-content {{event.brand.color}}">
-					{% else %}
-					<div class="card-content {{brandColor.value}}">
-					{% endif %}
-						<span class="card-title center">{{event.name}}</span>
-						<div class="row">
-							<table>
-								<tr class="card z-depth-5">
-									<div class="card-content">
-										<td>Championship</td>
-										<td colspan="3">Participants</td>
-									</div>
-								</tr>
-								{% for match in event.match_set.all %}
-								<tr class="card z-depth-5">
-									<div class="card-content">
-										<td>{{match.championship}}</td>
-										<td>
-											{% for wrestler in match.participants.all %}
-												{{wrestler}}
-											{% endfor %}
-										</td>
-									</div>
-								</tr>
-								{% endfor %}
-								{% for match in event.tag_team_match_set.all %}
-								<tr class="card z-depth-5">
-									<div class="card-content">
-										<td>{{match.championship}}</td>
-										<td>
-											{% for wrestler in match.team1.all %}
-												{{wrestler}}
-											{% endfor %}
-											{% for wrestler in match.team2.all %}
-												{{wrestler}}
-											{% endfor %}
-										</td>
-									</div>
-								</tr>
-								{% endfor %}
-							</table>
-						</div>
+<section>
+	<div class="row">
+		<div class="input-field col s12">
+			{% csrf_token %}
+			<button class="btn modal-trigger waves-effect waves-light black lighten-1" data-target="matchModal">Add New Match
+				<span><i class="fa fa-plus"></i></span>
+			</button>
+			<button class="btn modal-trigger waves-effect waves-light black lighten-1" data-target="tagMatchModal">Add New Tag Match
+				<span><i class="fa fa-plus"></i></span>
+			</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col s12">
+			<div class="card z-depth-5">
+				<div class="card-content {{event.brand.color|default:'black'}}">
+					<span class="card-title center">{{event.name}}</span>
+					<div class="row">
+						<table>
+							<tr class="card z-depth-5">
+								<div class="card-content">
+									<td>Championship</td>
+									<td colspan="3">Participants</td>
+								</div>
+							</tr>
+							{% for match in event.match_set.all %}
+							<tr class="card z-depth-5">
+								<div class="card-content">
+									<td>{{match.championship}}</td>
+									<td>
+										{% for wrestler in match.participants.all %}
+											{{wrestler}}
+										{% endfor %}
+									</td>
+								</div>
+							</tr>
+							{% endfor %}
+							{% for match in event.tag_team_match_set.all %}
+							<tr class="card z-depth-5">
+								<div class="card-content">
+									<td>{{match.championship}}</td>
+									<td>
+										{% for wrestler in match.team1.all %}
+											{{wrestler}}
+										{% endfor %}
+										{% for wrestler in match.team2.all %}
+											{{wrestler}}
+										{% endfor %}
+									</td>
+								</div>
+							</tr>
+							{% endfor %}
+						</table>
 					</div>
 				</div>
 			</div>
 		</div>
-	</section>
+	</div>
+</section>
+
+<div id="matchModal" class="modal">
+	<div class="modal-content">
+		<h4>New Singles Match</h4>
+		{% include 'wwe2k16/forms/template.html' with form=match_form %}
+		<div class="card z-depth-3 red" id="error-parent" style="display: none;">
+			<div class="card-content" id="error"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn modal-action modal-close waves-effect waves-light green lighten-1" id="addMatch">
+			Add Match
+		</button>
+	</div>
+</div>
+
+<div id="tagMatchModal" class="modal">
+	<div class="modal-content">
+		<h4>New Tag Match</h4>
+		{% include 'wwe2k16/forms/template.html' with form=tag_match_form %}
+		<div class="card z-depth-3 red" id="error-parent" style="display: none;">
+			<div class="card-content" id="error"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn modal-action modal-close waves-effect waves-light green lighten-1" id="addTagMatch">
+			Add Tag Match
+		</button>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+	function setAutocompleteData() {
+		const chipData = $('#id_participants').material_chip('data');
+		const customData = {};
+		chipData.forEach(el => {
+			customData[el.tag] = null;
+		});
+		$('#matchModal > #id_winner').autocomplete({
+			data: customData,
+			minLength: 1,
+		});
+	}
+
+	$(document).ready(() => {
+		getWrestlersData(['team1', 'team2', 'participants']);
+		$('#id_participants').on('chip.add', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#id_participants').on('chip.delete', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#addMatch').click((e) => {
+			const chipData = $('#id_participants').material_chip('data');
+			const options = [];
+			chipData.forEach(el => {
+				options.push(el.tag);
+			});
+			const event = $('#matchModal > #id_event').val();
+			const championship = $('#matchModal > #id_championship').val();
+			const match_type = $('#id_match_type').val();
+			const new_champion = $('#matchModal > #id_winner').val();
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe2k16/match/add/", {
+				event,
+				championship,
+				match_type,
+				new_champion,
+				csrfmiddlewaretoken,
+				participants_list: options,
+			},
+			(response, status) => {
+				handleFormResponse(response);
+			});
+		});
+
+		$('#addTagMatch').click((e) => {
+			const team1Data = $('#id_team1').material_chip('data');
+			const team2Data = $('#id_team2').material_chip('data');
+			const options = {
+				team1: [], team2: [],
+			};
+			team1Data.forEach(el => {
+				options.team1.push(el.tag);
+			});
+			team2Data.forEach(el => {
+				options.team2.push(el.tag);
+			});
+			const event = $('#tagMatchModal > #id_event').val();
+			const championship = $('#tagMatchModal > #id_championship').val();
+			const winner = $('#tagMatchModal > #id_winner').val();
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe2k16/match/tagteam/add/", {
+				event,
+				championship,
+				winner,
+				csrfmiddlewaretoken,
+				team1_list: options.team1,
+				team2_list: options.team2,
+			},
+			(response, status) => {
+				handleFormResponse(response);
+			});
+		});
+	});
+</script>
 {% endblock %}
