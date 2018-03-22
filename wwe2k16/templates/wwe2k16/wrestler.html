@@ -3,53 +3,58 @@
 {% block title %}{{ wrestler.name }}{% endblock %}
 
 {% block body %}
-{% load template_extras %}
-{% assign brandColor black %}
-{% if wrestler.brand %}
-	{% assign brandColor wrestler.brand.color %}
-{% endif %}
-	<section>
-		<div class="row">
-			<div class="col s12">
-				<div class="card z-depth-5">
-					<div class="card-content {{brandColor.value}} white-text">
-						<span class="card-title center">{{wrestler.name}}</span>
-						<div class="row">
-							<div class="col m12 s12 center">
-								<table>
-									<tr>
-										<td>Ovr: </td><td>{{ wrestler.ovr }}</td>
-										<td>Height: </td>
-										<td>
-											{{ wrestler.height }} 
-											{% if wrestler.height %}cm{% endif %}
-										</td>
-										<td>Weight: </td>
-										<td>
-											{{ wrestler.weight }} 
-											{% if wrestler.weight %}lbs{% endif %}
-										</td>
-									</tr>
-									<tr>
-										<td>Country: </td><td colspan="3">{{ wrestler.country.name }}</td>
-										<td>Brand: </td><td>{{ wrestler.brand }}</td>
-									</tr>
-									<tr>
-										<td>Original Primary: </td><td>{{ wrestler.original_primary }}</td>
-										<td>Original Secondary</td><td>{{ wrestler.original_secondary }}</td>
-										<td>World Titles: </td><td>{{ wrestler.primary }}</td>
-									</tr>
-									<tr>
-										<td>Secondary Titles: </td><td>{{ wrestler.secondary }}</td>
-										<td>Tertiary Titles: </td><td>{{ wrestler.tertiary }}</td>
-										<td>Tag Team Titles: </td><td>{{ wrestler.tag_team }}</td>
-									</tr>
-								</table>
-							</div>
+<section>
+	<div class="row">
+		<div class="col s12">
+			<div class="card z-depth-5">
+				<div class="card-content {{wrestler.brand.color|default:'black'}} white-text">
+					<span class="card-title center">{{wrestler.name}}</span>
+					<div class="row">
+						<div class="col m12 s12 center">
+							<table>
+								<tr>
+									<td>Ovr: </td><td>{{ wrestler.ovr }}</td>
+									<td>Height: </td>
+									<td>
+										{{ wrestler.height }} 
+										{% if wrestler.height %}cm{% endif %}
+									</td>
+									<td>Weight: </td>
+									<td>
+										{{ wrestler.weight }} 
+										{% if wrestler.weight %}lbs{% endif %}
+									</td>
+								</tr>
+								<tr>
+									<td>Country: </td><td colspan="3">{{ wrestler.country.name }}</td>
+									<td>Brand: </td><td>{{ wrestler.brand }}</td>
+								</tr>
+								<tr>
+									<td>Original Primary: </td><td>{{ wrestler.original_primary }}</td>
+									<td>Original Secondary</td><td>{{ wrestler.original_secondary }}</td>
+									<td>World Titles: </td><td>{{ wrestler.primary }}</td>
+								</tr>
+								<tr>
+									<td>Secondary Titles: </td><td>{{ wrestler.secondary }}</td>
+									<td>Tertiary Titles: </td><td>{{ wrestler.tertiary }}</td>
+									<td>Tag Team Titles: </td><td>{{ wrestler.tag_team }}</td>
+								</tr>
+							</table>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</section>
+	</div>
+
+	<div class="row">
+		<div class="col s12">
+			<div class="card z-depth-5">
+				<div class="card-content black white-text">
+
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
 {% endblock %}
