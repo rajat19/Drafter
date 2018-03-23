@@ -19,40 +19,64 @@
 		<div class="col s12">
 			<div class="card z-depth-5">
 				<div class="card-content {{event.brand.color|default:'black'}}">
-					<span class="card-title center">{{event.name}}</span>
+					<span class="card-title white-text center">{{event.name}}</span>
 					<div class="row">
 						<table>
 							<tr class="card z-depth-5">
-								<div class="card-content">
-									<td>Championship</td>
-									<td colspan="3">Participants</td>
-								</div>
+								<td>Championship</td>
+								<td colspan="2">Participants</td>
+								<td>Delete</td>
 							</tr>
 							{% for match in event.match_set.all %}
+							<tr class="card z-depth-5" id="match-{{match.pk}}">
+								<td>{{match.championship}}</td>
+								<td colspan="2">
+									<ul>
+									{% for wrestler in match.participants.all %}
+										<li>{{wrestler}}</li>
+									{% endfor %}
+									</ul>
+									
+								</td>
+								<td>
+									<button class="btn waves-effect waves-light white"  onclick="deleteRequest('match', '{{match.pk}}')">
+										<i class="material-icons red-text">delete</i>
+									</button>
+								</td>
+							</tr>
+							{% empty %}
 							<tr class="card z-depth-5">
-								<div class="card-content">
-									<td>{{match.championship}}</td>
-									<td>
-										{% for wrestler in match.participants.all %}
-											{{wrestler}}
-										{% endfor %}
-									</td>
-								</div>
+								<td colspan="4" class="center">
+									No Match Found
+								</td>
 							</tr>
 							{% endfor %}
 							{% for match in event.tag_team_match_set.all %}
-							<tr class="card z-depth-5">
+							<tr class="card z-depth-5" id="match-{{match.pk}}">
 								<div class="card-content">
 									<td>{{match.championship}}</td>
-									<td>
+									<td colspan="2">
+										<ul>
 										{% for wrestler in match.team1.all %}
-											{{wrestler}}
+											<li>{{wrestler}}</li>
 										{% endfor %}
 										{% for wrestler in match.team2.all %}
-											{{wrestler}}
+											<li>{{wrestler}}</li>
 										{% endfor %}
+										</ul>
+									</td>
+									<td>
+										<button class="btn waves-effect waves-light white"  onclick="deleteRequest('tagmatch', '{{match.pk}}')">
+											<i class="material-icons red-text">delete</i>
+										</button>
 									</td>
 								</div>
+							</tr>
+							{% empty %}
+							<tr class="card z-depth-5">
+								<td colspan="4" class="center">
+									No Tag Match Found
+								</td>
 							</tr>
 							{% endfor %}
 						</table>
@@ -102,7 +126,7 @@
 		chipData.forEach(el => {
 			customData[el.tag] = null;
 		});
-		$('#matchModal > #id_winner').autocomplete({
+		$('#id_winner').autocomplete({
 			data: customData,
 			minLength: 1,
 		});
@@ -122,10 +146,10 @@
 			chipData.forEach(el => {
 				options.push(el.tag);
 			});
-			const event = $('#matchModal > #id_event').val();
-			const championship = $('#matchModal > #id_championship').val();
+			const event = $('#id_event').val();
+			const championship = $('#id_championship').val();
 			const match_type = $('#id_match_type').val();
-			const new_champion = $('#matchModal > #id_winner').val();
+			const new_champion = $('#id_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
 			$.post("/wwe2k16/match/add/", {
 				event,
@@ -152,11 +176,11 @@
 			team2Data.forEach(el => {
 				options.team2.push(el.tag);
 			});
-			const event = $('#tagMatchModal > #id_event').val();
-			const championship = $('#tagMatchModal > #id_championship').val();
-			const winner = $('#tagMatchModal > #id_winner').val();
+			const event = $('#id_event').val();
+			const championship = $('#id_championship').val();
+			const winner = $('#id_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-			$.post("/wwe2k16/match/tagteam/add/", {
+			$.post("/wwe2k16/tagmatch/add/", {
 				event,
 				championship,
 				winner,
