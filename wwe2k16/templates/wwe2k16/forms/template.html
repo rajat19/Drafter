@@ -36,6 +36,10 @@
 				</div>
 				{{ field.label_tag }}
 			</div>
+		{% elif field|fieldtype == 'HiddenInput' %}
+			<div class="input-field col s12">
+				{{ field }}
+			</div>
 		{% else %}
 			<div class="input-field col s12">
 				<span class="red-text">
