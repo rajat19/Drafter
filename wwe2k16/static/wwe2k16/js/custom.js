@@ -14,7 +14,7 @@ function getWrestlersData(ids) {
 			if (!Array.isArray(ids)) {
 				ids = [ids];
 			}
-			for(var id in ids) {
+			for(var id of ids) {
 				$(`#id_${id}`).material_chip({
 					autocompleteOptions: {
 						data: customData,
@@ -43,8 +43,19 @@ function handleFormResponse(response) {
 	}
 }
 
-function confirmDelete(type, slug) {
+function deleteRequest(type, slug) {
 	const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+	$.post(`/wwe2k16/${type}/${slug}/delete/`, {
+		csrfmiddlewaretoken,
+	},
+	function(response, status) {
+		if (response === 'deleted') {
+			$(`#${type}-${slug}`).html('');
+		}
+	});
+}
+
+function confirmDelete(type, slug) {
 	swal({
 		title: "Confirm Deletion",
 		text: `Are you sure about deleting ${slug} ?`,
@@ -53,15 +64,7 @@ function confirmDelete(type, slug) {
 		showLoaderOnConfirm: true,
 		confirmButtonText: 'Yes, delete it!',
 	}).then((result) => {
-		$.post(`/wwe2k16/${type}/delete/`, {
-			csrfmiddlewaretoken,
-			slug,
-		},
-		function(response, status) {
-			if (response === 'deleted') {
-				$(`#${type}-${slug}`).html('');
-			}
-		});
+		deleteRequest(type, slug);
 	});
 }
 
