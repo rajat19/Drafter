@@ -14,7 +14,7 @@
 					</a>
 					{% csrf_token %}
 					<button class="btn-floating halfway-fab waves-effect waves-light white"  onclick="confirmDelete('event', '{{event.slug}}')">
-						<i class="material-icons {{brandColor.value}}-text">delete</i>
+						<i class="material-icons {{event.brand.color|default:'black'}}-text">delete</i>
 					</button>
 				</div>
 			</div>

@@ -44,7 +44,7 @@
 			const championship = $('#id_championship').val();
 			const winner = $('#id_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
-			$.post("/wwe2k16/match/tagteam/add/", {
+			$.post("/wwe2k16/tagmatch/add/", {
 				event,
 				championship,
 				winner,
