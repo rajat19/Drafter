@@ -113,6 +113,10 @@ main{
     vertical-align: middle;
 }
 
+.img-nav {
+	max-height: 70px;
+}
+
 .img-enhance {
 	-webkit-transition:-webkit-box-shadow .6s,background 2s,-webkit-border-radius .1s;
 }
