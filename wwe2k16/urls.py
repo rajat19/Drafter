@@ -18,8 +18,8 @@ urlpatterns = [
     # /wwe2k16/brand/raw/update
     url(r'^brand/(?P<slug>[\w-]+)/update/$', views.BrandUpdate.as_view(), name='brand-update'),
 
-    # /wwe2k16/brand/delete
-    url(r'^brand/delete/$', views.BrandDelete.as_view(), name='brand-delete'),
+    # /wwe2k16/brand/raw/delete
+    url(r'^brand/(?P<slug>[\w-]+)/delete/$', views.BrandDelete.as_view(), name='brand-delete'),
     
     # /wwe2k16/wrestlers
     url(r'^wrestlers/$', views.WrestlersView.as_view(), name='wrestlers'),
@@ -33,8 +33,8 @@ urlpatterns = [
     # /wwe2k16/wrestler/undertaker/update
     url(r'^wrestler/(?P<slug>[\w-]+)/update/$', views.WrestlerUpdate.as_view(), name='wrestler-update'),
 
-    # /wwe2k16/wrestler/delete
-    url(r'^wrestler/delete/$', views.WrestlerDelete.as_view(), name='wrestler-delete'),
+    # /wwe2k16/wrestler/undertaker/delete
+    url(r'^wrestler/(?P<slug>[\w-]+)/delete/$', views.WrestlerDelete.as_view(), name='wrestler-delete'),
 
     # /wwe2k16/tagteams
     url(r'^tagteams/$', views.TagTeamsView.as_view(), name='tagteams'),
@@ -48,8 +48,8 @@ urlpatterns = [
     # /wwe2k16/tagteam/nwo/update
     url(r'^tagteam/(?P<slug>[\w-]+)/update/$', views.TagTeamUpdate.as_view(), name='tagteam-update'),
 
-    # /wwe2k16/tagteam/delete
-    url(r'^tagteam/delete/$', views.TagTeamDelete.as_view(), name='tagteam-delete'),
+    # /wwe2k16/tagteam/nwo/delete
+    url(r'^tagteam/(?P<slug>[\w-]+)/delete/$', views.TagTeamDelete.as_view(), name='tagteam-delete'),
 
     # /wwe2k16/championships
     url(r'^championships/$', views.ChampionshipsView.as_view(), name='championships'),
@@ -63,8 +63,8 @@ urlpatterns = [
     # /wwe2k16/championship/wwe/update
     url(r'^championship/(?P<slug>[\w-]+)/update/$', views.ChampionshipUpdate.as_view(), name='championship-update'),
 
-    # /wwe2k16/championship/delete
-    url(r'^championship/delete/$', views.ChampionshipDelete.as_view(), name='championship-delete'),
+    # /wwe2k16/championship/wwe/delete
+    url(r'^championship/(?P<slug>[\w-]+)/delete/$', views.ChampionshipDelete.as_view(), name='championship-delete'),
 
     # /wwe2k16/events
     url(r'^events/$', views.EventsView.as_view(), name='events'),
@@ -78,8 +78,8 @@ urlpatterns = [
     # /wwe2k16/event/wrestlemania/update
     url(r'^event/(?P<slug>[\w-]+)/update/$', views.EventUpdate.as_view(), name='event-update'),
 
-    # /wwe2k16/event/delete
-    url(r'^event/delete/$', views.EventDelete.as_view(), name='event-delete'),
+    # /wwe2k16/event/wrestlemania/delete
+    url(r'^event/(?P<slug>[\w-]+)/delete/$', views.EventDelete.as_view(), name='event-delete'),
 
     # /wwe2k16/matchtypes
     url(r'^matchtypes/$', views.MatchTypesView.as_view(), name='matchtypes'),
@@ -93,14 +93,20 @@ urlpatterns = [
     # /wwe2k16/matchtype/triple-threat/update
     url(r'^matchtype/(?P<slug>[\w-]+)/update/$', views.MatchTypeUpdate.as_view(), name='matchtype-update'),
 
-    # /wwe2k16/matchtype/delete
-    url(r'^matchtype/delete/$', views.MatchTypeDelete.as_view(), name='matchtype-delete'),
+    # /wwe2k16/matchtype/triple-threat/delete
+    url(r'^matchtype/(?P<slug>[\w-]+)/delete/$', views.MatchTypeDelete.as_view(), name='matchtype-delete'),
 
     # /wwe2k16/match/add
     url(r'^match/add/$', views.MatchCreate.as_view(), name='match-add'),
 
+    # /wwe2k16/match/1/delete
+    url(r'^match/(?P<pk>[0-9]+)/delete/$', views.MatchDelete.as_view(), name='tagmatch-delete'),
+
     # /wwe2k16/match/tagteam/add
-    url(r'^match/tagteam/add/$', views.TagTeamMatchCreate.as_view(), name='tagteammatch-add'),
+    url(r'^tagmatch/add/$', views.TagTeamMatchCreate.as_view(), name='tagmatch-add'),
+
+    # /wwe2k16/tagmatch/1/delete
+    url(r'^tagmatch/(?P<pk>[0-9]+)/delete/$', views.TagTeamMatchDelete.as_view(), name='tagmatch-delete'),
 
     # /wwe2k16/drafts
     url(r'^drafts/', views.DraftsView.as_view(), name='drafts'),

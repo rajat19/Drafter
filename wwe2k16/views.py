@@ -10,7 +10,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_countries.widgets import CountrySelectWidget
 import json
 
-from .models import Brand, Wrestler, Championship, Event, Match, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
+from .models import Brand, Wrestler, Championship, Event, Match, TagTeamMatch, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
 from .forms import MatchForm, ChampionshipForm, TagTeamForm, TagMatchForm
 
 class IndexView(TemplateView):
@@ -33,11 +33,10 @@ class BrandCreate(CreateView):
 	template_name = 'wwe2k16/forms/create/brand.html'
 
 class BrandDelete(View):
-	def post(self, request):
-		request_dict = dict(request.POST.lists())
+	def post(self, request, *args, **kwargs):
 		message = 'failed'
-		if 'slug' in request_dict:
-			slug = request_dict['slug'][0]
+		if 'slug' in kwargs:
+			slug = kwargs['slug']
 			Brand.objects.get(slug=slug).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
@@ -65,11 +64,10 @@ class WrestlerCreate(CreateView):
 	template_name = 'wwe2k16/forms/create/wrestler.html'
 
 class WrestlerDelete(DeleteView):
-	def post(self, request):
-		request_dict = dict(request.POST.lists())
+	def post(self, request, *args, **kwargs):
 		message = 'failed'
-		if 'slug' in request_dict:
-			slug = request_dict['slug'][0]
+		if 'slug' in kwargs:
+			slug = kwargs['slug']
 			Wrestler.objects.get(slug=slug).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
@@ -123,11 +121,10 @@ class TagTeamCreate(CreateView):
 		return JsonResponse(data)
 
 class TagTeamDelete(DeleteView):
-	def post(self, request):
-		request_dict = dict(request.POST.lists())
+	def post(self, request, *args, **kwargs):
 		message = 'failed'
-		if 'slug' in request_dict:
-			slug = request_dict['slug'][0]
+		if 'slug' in kwargs:
+			slug = kwargs['slug']
 			TagTeam.objects.get(slug=slug).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
@@ -150,10 +147,10 @@ class EventView(View):
 	match_form_class = MatchForm
 	tag_match_form_class = TagMatchForm
 	def get(self, request, *args, **kwargs):
-		match_form = self.match_form_class(None)
-		tag_match_form = self.tag_match_form_class(None)
 		slug = kwargs['slug']
 		event = Event.objects.get(slug=slug)
+		match_form = self.match_form_class(exclude_event=True, initial={'event': event.pk})
+		tag_match_form = self.tag_match_form_class(exclude_event=True, initial={'event': event.pk})
 		return render(request, self.template_name, {
 			'event': event,
 			'match_form': match_form,
@@ -166,11 +163,10 @@ class EventCreate(CreateView):
 	template_name = 'wwe2k16/forms/create/event.html'
 
 class EventDelete(DeleteView):
-	def post(self, request):
-		request_dict = dict(request.POST.lists())
+	def post(self, request, *args, **kwargs):
 		message = 'failed'
-		if 'slug' in request_dict:
-			slug = request_dict['slug'][0]
+		if 'slug' in kwargs:
+			slug = kwargs['slug']
 			Event.objects.get(slug=slug).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
@@ -223,11 +219,10 @@ class ChampionshipCreate(CreateView):
 		return JsonResponse(data)
 		
 class ChampionshipDelete(DeleteView):
-	def post(self, request):
-		request_dict = dict(request.POST.lists())
+	def post(self, request, *args, **kwargs):
 		message = 'failed'
-		if 'slug' in request_dict:
-			slug = request_dict['slug'][0]
+		if 'slug' in kwargs:
+			slug = kwargs['slug']
 			Championship.objects.get(slug=slug).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
@@ -254,11 +249,10 @@ class MatchTypeCreate(CreateView):
 	template_name = 'wwe2k16/forms/create/match_type.html'
 
 class MatchTypeDelete(DeleteView):
-	def post(self, request):
-		request_dict = dict(request.POST.lists())
+	def post(self, request, *args, **kwargs):
 		message = 'failed'
-		if 'slug' in request_dict:
-			slug = request_dict['slug'][0]
+		if 'slug' in kwargs:
+			slug = kwargs['slug']
 			MatchType.objects.get(slug=slug).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
@@ -289,6 +283,7 @@ class MatchCreate(View):
 
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
+		print(request_dict)
 		participants_list = []
 		if 'participants_list[]' in request_dict:
 			participants_list = request_dict['participants_list[]']
@@ -333,8 +328,13 @@ class MatchCreate(View):
 		return JsonResponse(data)
 
 class MatchDelete(DeleteView):
-	model = Match
-	success_url = reverse_lazy('wwe2k16:matches')
+	def post(self, request, *args, **kwargs):
+		message = 'failed'
+		if 'pk' in kwargs:
+			pk = kwargs['pk']
+			Match.objects.get(pk=pk).delete()
+			message = 'deleted'
+		return JsonResponse(message, safe=False)
 
 class MatchUpdate(UpdateView):
 	model = Match
@@ -399,6 +399,15 @@ class TagTeamMatchCreate(View):
 				'errors': json.loads(form.errors.as_json()),
 			}
 		return JsonResponse(data)
+
+class TagTeamMatchDelete(DeleteView):
+	def post(self, request, *args, **kwargs):
+		message = 'failed'
+		if 'pk' in kwargs:
+			pk = kwargs['pk']
+			TagTeamMatch.objects.get(pk=pk).delete()
+			message = 'deleted'
+		return JsonResponse(message, safe=False)
 
 class DraftHistoryCreate(View):
 	def post(self, request):
