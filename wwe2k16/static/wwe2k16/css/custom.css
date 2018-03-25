@@ -12,21 +12,26 @@ body{
 main{
 	flex: 1 0 auto
 }
-/*@media only screen and (min-width: 600px) {
-	.backcover {
-		background-image: url('../images/bg.jpg') !important;
-		background-size: cover;
-		background-position: center;
+@media only screen and (min-width: 600px) {
+	body {
+		background-size: auto;
 	}
-	.phonecover {
-		display: none;
+	.img-nav {
+		max-height: 70px;
 	}
 }
 @media only screen and (max-width: 600px) {
-	.backcover {
-		background-color: #ededed;
+	body {
+		background-size: contain;
+		background-position: center;
+		background-color: #3b454a;
+		/* background-color:  */
+		background-repeat: no-repeat;
 	}
-}*/
+	.img-nav {
+		max-height: 50px;
+	}
+}
 #search-nav {
 	height: 60px !important;
 }
@@ -111,10 +116,6 @@ main{
     left: 15px;
     display: inline-block;
     vertical-align: middle;
-}
-
-.img-nav {
-	max-height: 70px;
 }
 
 .img-enhance {

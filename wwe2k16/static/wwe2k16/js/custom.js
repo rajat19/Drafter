@@ -27,19 +27,26 @@ function getWrestlersData(ids) {
 	});
 }
 
-function handleFormResponse(response) {
+function handleFormResponse(response, param = '') {
 	if(response.result == 1) {
-		Materialize.toast(response.message, 3000, 'rounded')
+		Materialize.toast(response.message, 3000, 'rounded');
 	}
 	else {
 		e = response.errors;
-		$('#error-parent').css('display', 'block');
+		errorParentId = '#error-parent';
+		errorId = '#error';
+		if (param !== '') {
+			errorParentId += `-${param}`;
+			errorId += `-${param}`;
+		}
+		$(errorParentId).css('display', 'block');
 		var html = ''
 		for(k in e) {
 			var s = `${capitalize(k)}: ${e[k][0].message}`;
 			var html = `${html}<strong>${s}</strong>`;
 		}
-		$('#error').html(html);
+		// Materialize.toast(html, 3000, 'rounded');
+		$(errorId).html(html);
 	}
 }
 
