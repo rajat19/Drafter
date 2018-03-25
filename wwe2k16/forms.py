@@ -1,5 +1,5 @@
 from .models import Wrestler, TagTeam, Championship, Event, Match, TagTeamMatch, MatchType
-from django.forms import ModelForm, TextInput, CharField, HiddenInput
+from django.forms import ModelForm, TextInput, CharField, HiddenInput, ModelChoiceField
 
 class WrestlerForm(ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -25,6 +25,7 @@ class MatchForm(ModelForm):
 		exclude_event = kwargs.pop('exclude_event', None)
 		super(MatchForm, self).__init__(*args, **kwargs)
 		self.fields['event'].empty_label = ''
+		self.fields['tag_championship'] = ModelChoiceField(queryset=Championship.objects.exclude(belt_type='TT'))
 		self.fields['championship'].empty_label = ''
 		self.fields['match_type'].empty_label = ''
 		self.fields['winner'] = CharField(required=False, widget=TextInput(attrs={'class': 'autocomplete'}))
@@ -40,10 +41,11 @@ class TagMatchForm(ModelForm):
 		exclude_event = kwargs.pop('exclude_event', None)
 		super(TagMatchForm, self).__init__(*args, **kwargs)
 		self.fields['event'].empty_label = ''
-		self.fields['championship'].empty_label = ''
+		self.fields['tag_championship'] = ModelChoiceField(queryset=Championship.objects.filter(belt_type='TT'))
+		self.fields['tag_championship'].empty_label = ''
 		if exclude_event:
 			self.fields['event'].widget = HiddenInput()
 
 	class Meta:
 		model = TagTeamMatch
-		fields = ['event', 'championship', 'team1', 'team2', 'winner']
+		fields = ['event', 'tag_championship', 'team1', 'team2', 'tag_winner']

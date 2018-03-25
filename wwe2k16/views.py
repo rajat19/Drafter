@@ -139,7 +139,7 @@ class EventsView(generic.ListView):
 	context_object_name = 'all_events'
 
 	def get_queryset(self):
-		return Event.objects.order_by('name')
+		return Event.objects.order_by('created_at')
 
 class EventView(View):
 	model = Event
@@ -203,15 +203,31 @@ class ChampionshipCreate(CreateView):
 		modified_champions_list = [str(x) for x in champions_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
-			championship = form.save(commit=False)
-			championship.save()
-			for x in modified_champions_list:
-				champion = Wrestler.objects.get(name = x)
-				championship.champion.add(champion)
-			data = {
-				'result': 1,
-				'message': 'Successfully added the championship',
-			}
+			try:
+				championship = form.save(commit=False)
+				championship.save()
+				belt_type = championship.belt_type
+				for x in modified_champions_list:
+					champion = Wrestler.objects.get(name = x)
+					championship.champion.add(champion)
+					if belt_type == 'PR':
+						champion.primary += 1
+					elif belt_type == 'SE':
+						champion.secondary += 1
+					elif belt_type == 'TE':
+						champion.tertiary += 1
+					elif belt_type == 'TT':
+						champion.tag_team += 1
+					champion.save()
+				data = {
+					'result': 1,
+					'message': 'Successfully added the championship',
+				}
+			except Exception as e:
+				data = {
+					'result': 1,
+					'message': e.message,
+				}
 		else: data = {
 				'result': 0,
 				'errors': json.loads(form.errors.as_json()),
@@ -222,9 +238,12 @@ class ChampionshipDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
 		message = 'failed'
 		if 'slug' in kwargs:
-			slug = kwargs['slug']
-			Championship.objects.get(slug=slug).delete()
-			message = 'deleted'
+			try:
+				slug = kwargs['slug']
+				Championship.objects.get(slug=slug).delete()
+				message = 'deleted'
+			except Exception as e:
+				message = e.message
 		return JsonResponse(message, safe=False)
 
 class ChampionshipUpdate(UpdateView):
@@ -283,44 +302,49 @@ class MatchCreate(View):
 
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
-		print(request_dict)
 		participants_list = []
 		if 'participants_list[]' in request_dict:
 			participants_list = request_dict['participants_list[]']
 		modified_participants_list = [str(x) for x in participants_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
-			match = form.save(commit=False)
-			championship = match.championship
-			belt_type = championship.belt_type
-			old_champion = championship.champion.all()[0]
-			match.winner = Wrestler.objects.get(name = request_dict['new_champion'][0])
-			new_champion = match.winner
-			if belt_type == 'PR':
-				match.winner.primary += 1
-			elif belt_type == 'SE':
-				match.winner.secondary += 1
-			elif belt_type == 'TE':
-				match.winner.tertiary += 1
-			elif belt_type == 'TT':
-				match.winner.tag_team += 1
-			match.winner.save()
-			match.save()
-			match.championship.champion.set([new_champion])
-			if old_champion.name != new_champion.name:
-				championship_history = ChampionshipHistory(match=match)
-				championship_history.save()
-				championship_history.old_champion.add(old_champion)
-				championship_history.new_champion.add(new_champion)
+			try:
+				match = form.save(commit=False)
+				championship = match.championship
+				belt_type = championship.belt_type
+				old_champion = championship.champion.all()[0]
+				match.winner = Wrestler.objects.get(name = request_dict['new_champion'][0])
+				new_champion = match.winner
+				match.championship.champion.set([new_champion])
+				match.save()
+				if old_champion.name != new_champion.name:
+					if belt_type == 'PR':
+						match.winner.primary += 1
+					elif belt_type == 'SE':
+						match.winner.secondary += 1
+					elif belt_type == 'TE':
+						match.winner.tertiary += 1
+					elif belt_type == 'TT':
+						match.winner.tag_team += 1
+					match.winner.save()
+					championship_history = ChampionshipHistory(match=match)
+					championship_history.save()
+					championship_history.old_champion.add(old_champion)
+					championship_history.new_champion.add(new_champion)
 
-			for x in modified_participants_list:
-				participant = Wrestler.objects.get(name = x)
-				match.participants.add(participant)
+				for x in modified_participants_list:
+					participant = Wrestler.objects.get(name = x)
+					match.participants.add(participant)
 
-			data = {
-				'result': 1,
-				'message': 'Successfully added the match',
-			}
+				data = {
+					'result': 1,
+					'message': 'Successfully added the match',
+				}
+			except Exception as e:
+				data = {
+					'result': 1,
+					'message': e.message,
+				}
 		else: data = {
 				'result': 0,
 				'errors': json.loads(form.errors.as_json()),
@@ -351,53 +375,61 @@ class TagTeamMatchCreate(View):
 
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
+		print(request_dict)
 		team1_list = request_dict['team1_list[]']
 		team2_list = request_dict['team2_list[]']
 		modified_team1_list = [str(x) for x in team1_list]
 		modified_team2_list = [str(x) for x in team2_list]
 		form = self.form_class(request.POST)
 		if form.is_valid():
-			match = form.save(commit=False)
-			winner = match.winner
-			winning_team = []
-			if winner == 1:
-				winning_team = modified_team1_list
-			elif winner == 2:
-				winning_team = modified_team2_list
-			old_champions = match.championship.champion.all()
-			old_champ_names = []
-			for x in old_champions:
-				old_champ_names.append(x.name)
-			match.championship.champion.clear()
-			for x in winning_team:
-				wrestler = Wrestler.objects.get(name = x)
-				wrestler.tag_team += 1
-				wrestler.save()
-				match.championship.champion.add(wrestler)
-			match.save()
-			if (bool(set(old_champ_names).intersection(winning_team)) == False):
-				championship_history = ChampionshipHistory(match=match)
-				championship_history.save()
+			try:
+				match = form.save(commit=False)
+				winner = match.tag_winner
+				winning_team = []
+				if winner == 't1':
+					winning_team = modified_team1_list
+				elif winner == 't2':
+					winning_team = modified_team2_list
+				old_champions = match.tag_championship.champion.all()
+				old_champ_names = []
 				for x in old_champions:
-					championship_history.old_champion.add(x)
+					old_champ_names.append(x.name)
+				match.tag_championship.champion.clear()
 				for x in winning_team:
 					wrestler = Wrestler.objects.get(name = x)
-					championship_history.new_champion.add(x)
-			for x in modified_team1_list:
-				participant = Wrestler.objects.get(name = x)
-				match.team1.add(participant)
-			for x in modified_team2_list:
-				participant = Wrestler.objects.get(name = x)
-				match.team2.add(participant)
-			
-			data = {
-				'result': 1,
-				'message': 'Successfully added the tag team match',
-			}
+					match.tag_championship.champion.add(wrestler)
+				match.save()
+				if (bool(set(old_champ_names).intersection(winning_team)) == False):
+					championship_history = ChampionshipHistory(tag_match=match)
+					championship_history.save()
+					for x in old_champions:
+						championship_history.old_champion.add(x)
+					for x in winning_team:
+						wrestler = Wrestler.objects.get(name = x)
+						wrestler.tag_team += 1
+						wrestler.save()
+						championship_history.new_champion.add(x)
+				for x in modified_team1_list:
+					participant = Wrestler.objects.get(name = x)
+					match.team1.add(participant)
+				for x in modified_team2_list:
+					participant = Wrestler.objects.get(name = x)
+					match.team2.add(participant)
+				
+				data = {
+					'result': 1,
+					'message': 'Successfully added the tag team match',
+				}
+			except Exception as e:
+				data = {
+					'result': 1,
+					'message': e.message,
+				}
 		else: data = {
 				'result': 0,
 				'errors': json.loads(form.errors.as_json()),
 			}
+		print(data)
 		return JsonResponse(data)
 
 class TagTeamMatchDelete(DeleteView):
@@ -429,8 +461,11 @@ class DraftHistoryCreate(View):
 				)
 				new_draft.save()
 			message = 'Saved draft history'
-		except:
-			message = 'Some error while saving draft history'
+		except Exception as e:
+			data = {
+				'result': 1,
+				'message': e.message,
+			}
 		return JsonResponse(message, safe=False)
 
 class DraftsView(View):

@@ -41,13 +41,13 @@
 				options.team2.push(el.tag);
 			});
 			const event = $('#id_event').val();
-			const championship = $('#id_championship').val();
-			const winner = $('#id_winner').val();
+			const tag_championship = $('#id_tag_championship').val();
+			const tag_winner = $('#id_tag_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
 			$.post("/wwe2k16/tagmatch/add/", {
 				event,
-				championship,
-				winner,
+				tag_championship,
+				tag_winner,
 				csrfmiddlewaretoken,
 				team1_list: options.team1,
 				team2_list: options.team2,

@@ -212,23 +212,24 @@ class Match(TimestampModel):
 		verbose_name_plural = 'matches'
 
 class TagTeamMatch(TimestampModel):
-	TEAM1 = '1'
-	TEAM2 = '2'
+	TEAM1 = 't1'
+	TEAM2 = 't2'
 	WINNER_CHOICES = (
 		(TEAM1, 'Team 1'),
 		(TEAM2, 'Team 2'),
 	)
 	event = models.ForeignKey(Event, on_delete=models.CASCADE)
-	championship = models.ForeignKey(Championship, null=True, blank=True)
-	team1 = models.ManyToManyField(Wrestler, related_name='team1')
-	team2 = models.ManyToManyField(Wrestler, related_name='team2')
-	winner = models.PositiveSmallIntegerField(choices=WINNER_CHOICES, default=TEAM1)
+	tag_championship = models.ForeignKey(Championship, null=True, blank=True)
+	team1 = models.ManyToManyField(Wrestler, related_name='team1', blank=True)
+	team2 = models.ManyToManyField(Wrestler, related_name='team2', blank=True)
+	tag_winner = models.CharField(choices=WINNER_CHOICES, default=TEAM1, max_length=2)
 	
 	class Meta:
 		verbose_name_plural = 'tag_team_matches'
 
 class ChampionshipHistory(TimestampModel):
 	match = models.ForeignKey(Match, null=True, blank=True)
+	tag_match = models.ForeignKey(TagTeamMatch, null=True, blank=True)
 	old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='old_champion')
 	new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='new_champion')
 	

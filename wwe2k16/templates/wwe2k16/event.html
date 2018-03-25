@@ -18,44 +18,45 @@
 	<div class="row">
 		<div class="col s12">
 			<div class="card z-depth-5">
-				<div class="card-content {{event.brand.color|default:'black'}}">
+				<div class="card-content black">
 					<span class="card-title white-text center">{{event.name}}</span>
 					<div class="row">
-						<table>
-							<tr class="card z-depth-5">
+						<table class="striped highlight centered">
+							<tr class="card z-depth-5 {{event.brand.color|default:'purple'}} darken-3 white-text">
 								<td>Championship</td>
-								<td colspan="2">Participants</td>
+								<td>Participants</td>
+								<td>Winner</td>
 								<td>Delete</td>
 							</tr>
 							{% for match in event.match_set.all %}
 							<tr class="card z-depth-5" id="match-{{match.pk}}">
 								<td>{{match.championship}}</td>
-								<td colspan="2">
+								<td>
 									<ul>
 									{% for wrestler in match.participants.all %}
 										<li>{{wrestler}}</li>
 									{% endfor %}
 									</ul>
-									
 								</td>
+								<td>{{match.winner}}</td>
 								<td>
-									<button class="btn waves-effect waves-light white"  onclick="deleteRequest('match', '{{match.pk}}')">
+									<button class="btn waves-effect waves-light white" onclick="deleteRequest('match', '{{match.pk}}')">
 										<i class="material-icons red-text">delete</i>
 									</button>
 								</td>
 							</tr>
 							{% empty %}
 							<tr class="card z-depth-5">
-								<td colspan="4" class="center">
+								<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
 									No Match Found
 								</td>
 							</tr>
 							{% endfor %}
-							{% for match in event.tag_team_match_set.all %}
+							{% for match in event.tagteammatch_set.all %}
 							<tr class="card z-depth-5" id="match-{{match.pk}}">
 								<div class="card-content">
-									<td>{{match.championship}}</td>
-									<td colspan="2">
+									<td>{{match.tag_championship}}</td>
+									<td>
 										<ul>
 										{% for wrestler in match.team1.all %}
 											<li>{{wrestler}}</li>
@@ -63,6 +64,19 @@
 										{% for wrestler in match.team2.all %}
 											<li>{{wrestler}}</li>
 										{% endfor %}
+										</ul>
+									</td>
+									<td>
+										<ul>
+										{% if match.tag_winner == 't1' %}
+											{% for wrestler in match.team1.all %}
+												<li>{{wrestler}}</li>
+											{% endfor %}
+										{% elif match.tag_winner == 't2' %}
+											{% for wrestler in match.team2.all %}
+												<li>{{wrestler}}</li>
+											{% endfor %}
+										{% endif %}
 										</ul>
 									</td>
 									<td>
@@ -74,7 +88,7 @@
 							</tr>
 							{% empty %}
 							<tr class="card z-depth-5">
-								<td colspan="4" class="center">
+								<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
 									No Tag Match Found
 								</td>
 							</tr>
@@ -96,7 +110,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn modal-action modal-close waves-effect waves-light green lighten-1" id="addMatch">
+		<button class="btn modal-action waves-effect waves-light green lighten-1" id="addMatch">
 			Add Match
 		</button>
 	</div>
@@ -106,12 +120,12 @@
 	<div class="modal-content">
 		<h4>New Tag Match</h4>
 		{% include 'wwe2k16/forms/template.html' with form=tag_match_form %}
-		<div class="card z-depth-3 red" id="error-parent" style="display: none;">
-			<div class="card-content" id="error"></div>
+		<div class="card z-depth-3 red" id="error-parent-tag" style="display: none;">
+			<div class="card-content" id="error-tag"></div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn modal-action modal-close waves-effect waves-light green lighten-1" id="addTagMatch">
+		<button class="btn modal-action waves-effect waves-light green lighten-1" id="addTagMatch">
 			Add Tag Match
 		</button>
 	</div>
@@ -177,19 +191,19 @@
 				options.team2.push(el.tag);
 			});
 			const event = $('#id_event').val();
-			const championship = $('#id_championship').val();
-			const winner = $('#id_winner').val();
+			const tag_championship = $('#id_tag_championship').val();
+			const tag_winner = $('#id_tag_winner').val();
 			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
 			$.post("/wwe2k16/tagmatch/add/", {
 				event,
-				championship,
-				winner,
+				tag_championship,
+				tag_winner,
 				csrfmiddlewaretoken,
 				team1_list: options.team1,
 				team2_list: options.team2,
 			},
 			(response, status) => {
-				handleFormResponse(response);
+				handleFormResponse(response, 'tag');
 			});
 		});
 	});
