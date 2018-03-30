@@ -22,77 +22,79 @@
 					<span class="card-title white-text center">{{event.name}}</span>
 					<div class="row">
 						<table class="striped highlight centered">
-							<tr class="card z-depth-5 {{event.brand.color|default:'purple'}} darken-3 white-text">
-								<td>Championship</td>
-								<td>Participants</td>
-								<td>Winner</td>
-								<td>Delete</td>
-							</tr>
-							{% for match in event.match_set.all %}
-							<tr class="card z-depth-5" id="match-{{match.pk}}">
-								<td>{{match.championship}}</td>
-								<td>
-									<ul>
-									{% for wrestler in match.participants.all %}
-										<li>{{wrestler}}</li>
-									{% endfor %}
-									</ul>
-								</td>
-								<td>{{match.winner}}</td>
-								<td>
-									<button class="btn waves-effect waves-light white" onclick="deleteRequest('match', '{{match.pk}}')">
-										<i class="material-icons red-text">delete</i>
-									</button>
-								</td>
-							</tr>
-							{% empty %}
-							<tr class="card z-depth-5">
-								<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
-									No Match Found
-								</td>
-							</tr>
-							{% endfor %}
-							{% for match in event.tagteammatch_set.all %}
-							<tr class="card z-depth-5" id="match-{{match.pk}}">
-								<div class="card-content">
-									<td>{{match.tag_championship}}</td>
+							<thead>
+								<tr class="card z-depth-5 {{event.brand.color|default:'purple'}} darken-3 white-text">
+									<th>Championship</th>
+									<th>Participants</th>
+									<th>Winner</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for match in event.match_set.all %}
+								<tr class="card z-depth-5" id="match-{{match.pk}}">
+									<td>{{match.championship}}</td>
 									<td>
 										<ul>
-										{% for wrestler in match.team1.all %}
-											<li>{{wrestler}}</li>
-										{% endfor %}
-										{% for wrestler in match.team2.all %}
+										{% for wrestler in match.participants.all %}
 											<li>{{wrestler}}</li>
 										{% endfor %}
 										</ul>
 									</td>
+									<td>{{match.winner}}</td>
 									<td>
-										<ul>
-										{% if match.tag_winner == 't1' %}
-											{% for wrestler in match.team1.all %}
-												<li>{{wrestler}}</li>
-											{% endfor %}
-										{% elif match.tag_winner == 't2' %}
-											{% for wrestler in match.team2.all %}
-												<li>{{wrestler}}</li>
-											{% endfor %}
-										{% endif %}
-										</ul>
-									</td>
-									<td>
-										<button class="btn waves-effect waves-light white"  onclick="deleteRequest('tagmatch', '{{match.pk}}')">
+										<button class="btn waves-effect waves-light white" onclick="deleteRequest('match', '{{match.pk}}')">
 											<i class="material-icons red-text">delete</i>
 										</button>
 									</td>
-								</div>
-							</tr>
-							{% empty %}
-							<tr class="card z-depth-5">
-								<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
-									No Tag Match Found
-								</td>
-							</tr>
-							{% endfor %}
+								</tr>
+								{% empty %}
+								<tr class="card z-depth-5">
+									<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
+										No Match Found
+									</td>
+								</tr>
+								{% endfor %}
+								{% for match in event.tagteammatch_set.all %}
+								<tr class="card z-depth-5" id="match-{{match.pk}}">
+										<td>{{match.tag_championship}}</td>
+										<td>
+											<ul>
+											{% for wrestler in match.team1.all %}
+												<li>{{wrestler}}</li>
+											{% endfor %}
+											{% for wrestler in match.team2.all %}
+												<li>{{wrestler}}</li>
+											{% endfor %}
+											</ul>
+										</td>
+										<td>
+											<ul>
+											{% if match.tag_winner == 't1' %}
+												{% for wrestler in match.team1.all %}
+													<li>{{wrestler}}</li>
+												{% endfor %}
+											{% elif match.tag_winner == 't2' %}
+												{% for wrestler in match.team2.all %}
+													<li>{{wrestler}}</li>
+												{% endfor %}
+											{% endif %}
+											</ul>
+										</td>
+										<td>
+											<button class="btn waves-effect waves-light white"  onclick="deleteRequest('tagmatch', '{{match.pk}}')">
+												<i class="material-icons red-text">delete</i>
+											</button>
+										</td>
+								</tr>
+								{% empty %}
+								<tr class="card z-depth-5">
+									<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
+										No Tag Match Found
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
 						</table>
 					</div>
 				</div>
@@ -106,7 +108,7 @@
 		<h4>New Singles Match</h4>
 		{% include 'wwe2k16/forms/template.html' with form=match_form %}
 		<div class="card z-depth-3 red" id="error-parent" style="display: none;">
-			<div class="card-content" id="error"></div>
+			<div class="card-content red" id="error"></div>
 		</div>
 	</div>
 	<div class="modal-footer">
@@ -121,7 +123,7 @@
 		<h4>New Tag Match</h4>
 		{% include 'wwe2k16/forms/template.html' with form=tag_match_form %}
 		<div class="card z-depth-3 red" id="error-parent-tag" style="display: none;">
-			<div class="card-content" id="error-tag"></div>
+			<div class="card-content red" id="error-tag"></div>
 		</div>
 	</div>
 	<div class="modal-footer">
