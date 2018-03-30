@@ -106,6 +106,9 @@ class Wrestler(SoftDeletionModel):
 	def get_absolute_url(self):
 		return reverse('wwe2k16:wrestler-add')
 
+	def original_titles(self):
+		return self.original_primary + self.original_secondary
+
 	def total_titles(self):
 		return self.primary + self.secondary + self.tertiary + self.tag_team
 
@@ -208,6 +211,9 @@ class Match(TimestampModel):
 	participants = models.ManyToManyField(Wrestler, blank=True, related_name='participants')
 	winner = models.ForeignKey(Wrestler, blank=True, related_name='winner', null=True)
 
+	def __str__(self):
+		return "%s (%s)" % (self.event, self.championship)
+
 	class Meta:
 		verbose_name_plural = 'matches'
 
@@ -223,6 +229,9 @@ class TagTeamMatch(TimestampModel):
 	team1 = models.ManyToManyField(Wrestler, related_name='team1', blank=True)
 	team2 = models.ManyToManyField(Wrestler, related_name='team2', blank=True)
 	tag_winner = models.CharField(choices=WINNER_CHOICES, default=TEAM1, max_length=2)
+
+	def __str__(self):
+		return "%s (%s)" % (self.event, self.tag_championship)
 	
 	class Meta:
 		verbose_name_plural = 'tag_team_matches'
@@ -232,6 +241,9 @@ class ChampionshipHistory(TimestampModel):
 	tag_match = models.ForeignKey(TagTeamMatch, null=True, blank=True)
 	old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='old_champion')
 	new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='new_champion')
+
+	def __str__(self):
+		return "%s / %s" % (self.match, self.tag_match)
 	
 	class Meta:
 		verbose_name_plural = 'championship_history'

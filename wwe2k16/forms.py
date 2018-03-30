@@ -25,7 +25,7 @@ class MatchForm(ModelForm):
 		exclude_event = kwargs.pop('exclude_event', None)
 		super(MatchForm, self).__init__(*args, **kwargs)
 		self.fields['event'].empty_label = ''
-		self.fields['tag_championship'] = ModelChoiceField(queryset=Championship.objects.exclude(belt_type='TT'))
+		self.fields['championship'] = ModelChoiceField(queryset=Championship.objects.exclude(belt_type='TT'))
 		self.fields['championship'].empty_label = ''
 		self.fields['match_type'].empty_label = ''
 		self.fields['winner'] = CharField(required=False, widget=TextInput(attrs={'class': 'autocomplete'}))

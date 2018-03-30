@@ -317,16 +317,16 @@ class MatchCreate(View):
 				new_champion = match.winner
 				match.championship.champion.set([new_champion])
 				match.save()
+				if belt_type == 'PR':
+					match.winner.primary += 1
+				elif belt_type == 'SE':
+					match.winner.secondary += 1
+				elif belt_type == 'TE':
+					match.winner.tertiary += 1
+				elif belt_type == 'TT':
+					match.winner.tag_team += 1
+				match.winner.save()
 				if old_champion.name != new_champion.name:
-					if belt_type == 'PR':
-						match.winner.primary += 1
-					elif belt_type == 'SE':
-						match.winner.secondary += 1
-					elif belt_type == 'TE':
-						match.winner.tertiary += 1
-					elif belt_type == 'TT':
-						match.winner.tag_team += 1
-					match.winner.save()
 					championship_history = ChampionshipHistory(match=match)
 					championship_history.save()
 					championship_history.old_champion.add(old_champion)
@@ -375,7 +375,6 @@ class TagTeamMatchCreate(View):
 
 	def post(self, request):
 		request_dict = dict(request.POST.lists())
-		print(request_dict)
 		team1_list = request_dict['team1_list[]']
 		team2_list = request_dict['team2_list[]']
 		modified_team1_list = [str(x) for x in team1_list]
@@ -397,6 +396,8 @@ class TagTeamMatchCreate(View):
 				match.tag_championship.champion.clear()
 				for x in winning_team:
 					wrestler = Wrestler.objects.get(name = x)
+					wrestler.tag_team += 1
+					wrestler.save()
 					match.tag_championship.champion.add(wrestler)
 				match.save()
 				if (bool(set(old_champ_names).intersection(winning_team)) == False):
@@ -406,16 +407,14 @@ class TagTeamMatchCreate(View):
 						championship_history.old_champion.add(x)
 					for x in winning_team:
 						wrestler = Wrestler.objects.get(name = x)
-						wrestler.tag_team += 1
-						wrestler.save()
-						championship_history.new_champion.add(x)
+						championship_history.new_champion.add(wrestler)
 				for x in modified_team1_list:
 					participant = Wrestler.objects.get(name = x)
 					match.team1.add(participant)
 				for x in modified_team2_list:
 					participant = Wrestler.objects.get(name = x)
 					match.team2.add(participant)
-				
+
 				data = {
 					'result': 1,
 					'message': 'Successfully added the tag team match',
@@ -429,7 +428,6 @@ class TagTeamMatchCreate(View):
 				'result': 0,
 				'errors': json.loads(form.errors.as_json()),
 			}
-		print(data)
 		return JsonResponse(data)
 
 class TagTeamMatchDelete(DeleteView):
