@@ -94,6 +94,22 @@ function initializeClasses() {
 		hiddenName: true,
 	});
 	$('.chips').material_chip();
+	$('.sort-table').tablesorter({
+		theme: 'materialize',
+		widthFixed: true,
+		// use the zebra stripe widget if you plan on hiding any rows (filter widget)
+		widgets: ['filter', 'zebra'],
+		widgetOptions: {
+			zebra: ['even', 'odd'],
+			filter_cssfilter: ['', '', 'browser-default'],
+		},
+	})
+	.tablesorterPager({
+		container: $('.ts-pager'),
+		cssGoto: '.pagenum',
+		removeRows: false,
+		output: '{startRow} - {endRow} / {filteredRow} ({totalRows})'
+	});
 }
 
 $(document).ready(() => {

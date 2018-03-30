@@ -14,7 +14,9 @@ main{
 }
 @media only screen and (min-width: 600px) {
 	body {
-		background-size: auto;
+		background-size: cover;
+		background-position-x: center;
+		background-repeat: no-repeat;
 	}
 	.img-nav {
 		max-height: 70px;
@@ -120,11 +122,14 @@ main{
 
 .img-enhance {
 	-webkit-transition:-webkit-box-shadow .6s,background 2s,-webkit-border-radius .1s;
+	transition: -webkit-box-shadow .6s,background 2s,-webkit-border-radius .1s;
 }
 
 .img-enhance:hover {
 	-webkit-box-shadow:#ff8a65 10px 10px;
+	box-shadow: #ff8a65 10px 10px;
 	-webkit-border-radius:5px;
+	border-radius: 5px;
 	/*background:-webkit-linear-gradient(60deg,orange,white);*/
 }
 
@@ -139,4 +144,16 @@ nav .nav-wrapper {
 
 .container {
 	margin-top: 20px;
+}
+
+ul {
+	padding-left: 20px;
+}
+
+.btn {
+	font-size: .8em;
+}
+
+.material-icons {
+	vertical-align: bottom;
 }
