@@ -7,6 +7,7 @@ class Command(BaseCommand):
 		championships = Championship.objects.filter(status = True)
 		wc, sc, ttc, exc, ch, top, sec, rest = [], [], [], [], [], [], [], []
 		for championship in championships:
+			tt = []
 			for champion in championship.champion.all():
 				if 'nxt' in championship.slug:
 					exc.append(champion)
@@ -15,8 +16,10 @@ class Command(BaseCommand):
 				elif championship.belt_type == 'SE':
 					sc.append(champion)
 				elif championship.belt_type == 'TT':
-					ttc.append(champion)
+					tt.append(champion)
 				ch.append(champion.name)
+			if len(tt) == 2:
+				ttc.append(tt)
 		wrestlers = Wrestler.objects.exclude(name__in = ch)
 		sorted_wrestlers = sorted(wrestlers, key=lambda w: w.total_points(), reverse=True)
 		for wrestler in sorted_wrestlers:
@@ -39,10 +42,10 @@ class Command(BaseCommand):
 			random.shuffle(rest)
 
 		rest_count = (int)(len(rest) / 4)
-		raw = [wc[0], sc[0], ttc[0], ttc[1]] + top[:10] + sec[:10] + rest[:rest_count]
-		smackdown = [wc[1], sc[1], ttc[2], ttc[3]] + top[10:20] + sec[10:20] + rest[rest_count:2*rest_count]
+		raw = [wc[0], sc[0], ttc[0][0], ttc[0][1]] + top[:10] + sec[:10] + rest[:rest_count]
+		smackdown = [wc[1], sc[1], ttc[1][0], ttc[1][1]] + top[10:20] + sec[10:20] + rest[rest_count:2*rest_count]
 		nxt = [wc[2], exc[0], exc[1], exc[2]] + top[20:30] + sec[20:30] + rest[2*rest_count:3*rest_count]
-		legends = [wc[3], sc[2], ttc[4], ttc[5]] + top[30:] + sec[30:] + rest[3*rest_count:]
+		legends = [wc[3], sc[2], ttc[2][0], ttc[2][1]] + top[30:] + sec[30:] + rest[3*rest_count:]
 
 		raw_brand = Brand.objects.get(name__icontains = 'raw')
 		sd_brand = Brand.objects.get(name__icontains = 'smack')
