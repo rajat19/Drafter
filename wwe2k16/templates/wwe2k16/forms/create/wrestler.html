@@ -1,5 +1,5 @@
 {% extends 'wwe2k16/base.html' %}
-{% block title %}Add New Superstar{% endblock %}
+{% block title %}Save Superstar{% endblock %}
 
 {% block body %}
 <section>
@@ -7,14 +7,14 @@
 		<div class="col s12 m8 offset-m2">
 			<div class="card z-depth-5">
 				<div class="card-content">
-					<span class="card-title">Add New Superstar</span>
+					<span class="card-title">Save Superstar</span>
 					<form action="" method="POST" enctype="multipart/form-data">
 						{% csrf_token %}
 						{% include 'wwe2k16/forms/template.html' %}
 						{% include 'wwe2k16/forms/error.html' %}
 						<div class="row">
 							<div class="input-field col s12">
-								<button class="btn waves-effect waves-light green lighten-1" type="submit">Add Superstar
+								<button class="btn waves-effect waves-light green lighten-1" type="submit">Save Superstar
 									<span><i class="fa fa-user"></i></span>
 								</button>
 							</div>

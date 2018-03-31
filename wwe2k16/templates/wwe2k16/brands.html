@@ -11,6 +11,9 @@
 						<span class="card-title">{{brand.name}} </span>
 					</a>
 					{% csrf_token %}
+					<a class="btn btn-floating halfway-fab waves-effect waves-light white" href="{% url 'wwe2k16:brand-update' brand.slug %}">
+						<i class="material-icons {{brand.color}}-text">edit</i>
+					</a>
 					<button class="btn-floating halfway-fab waves-effect waves-light white"  onclick="confirmDelete('brand', '{{brand.slug}}')">
 						<i class="material-icons {{brand.color}}-text">delete</i>
 					</button>

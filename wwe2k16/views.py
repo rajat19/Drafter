@@ -43,8 +43,8 @@ class BrandDelete(View):
 
 class BrandUpdate(UpdateView):
 	model = Brand
-	fields = ['name']
-	template_name = 'wwe2k16/forms/update/brand.html'
+	fields = ['name', 'color']
+	template_name = 'wwe2k16/forms/create/brand.html'
 
 class WrestlersView(generic.ListView):
 	template_name = 'wwe2k16/wrestlers.html'
