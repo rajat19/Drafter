@@ -4,7 +4,7 @@ from wwe2k16.models import Championship, Wrestler, Brand, TemporaryDraft
 
 class Command(BaseCommand):
 	def _generate_draft(self):
-		championships = Championship.objects.filter(status = 1)
+		championships = Championship.objects.filter(status = True)
 		wc, sc, ttc, exc, ch, top, sec, rest = [], [], [], [], [], [], [], []
 		for championship in championships:
 			for champion in championship.champion.all():
@@ -60,6 +60,7 @@ class Command(BaseCommand):
 		# for wrestler in legends:
 		# 	wrestler.brand = leg_brand
 		# 	wrestler.save()
+
 		TemporaryDraft.objects.all().delete()
 		td = TemporaryDraft(brand=raw_brand)
 		td.save()

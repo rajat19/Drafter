@@ -14,11 +14,10 @@
 					<th class="filter-select filter-exact" data-placeholder="Pick a brand">
 						Brand
 					</th>
-					<th>Original Championships</th>
-					<th>New Championships</th>
+					<th>Original</th>
+					<th>New</th>
 					<th>Points</th>
-					<th>Delete</th>
-					<th>Link</th>
+					<th>Links</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,12 +33,10 @@
 					<td>
 						{% csrf_token %}
 						<button class="btn waves-effect waves-light red"  onclick="confirmDelete('wrestler', '{{wrestler.slug}}')">
-								<i class="material-icons">delete</i>
+							<i class="material-icons">delete</i>
 						</button>
-					</td>
-					<td>
-						<a href="{% url 'wwe2k16:wrestler' wrestler.slug %}">
-							<i class="material-icons black-text">edit</i>
+						<a href="{% url 'wwe2k16:wrestler' wrestler.slug %}" class="btn waves-effect waves-light black">
+							<i class="material-icons">edit</i>
 						</a>
 					</td>
 				</tr>
@@ -47,7 +44,7 @@
 			</tbody>
 			<tfoot>
 				<tr class="tablesorter-ignoreRow card z-depth-5">
-					<th class="ts-pager form-horizontal" colspan="8">
+					<th class="ts-pager form-horizontal" colspan="7">
 						<button type="button" class="btn first black"><i class="small material-icons">first_page</i></button>
 						<button type="button" class="btn prev black"><i class="small material-icons">navigate_before</i></button>
 						<span class="pagedisplay"></span>

@@ -452,6 +452,8 @@ class DraftHistoryCreate(View):
 				wrestler_list = []
 				for wrestler in draft.wrestlers.all():
 					wrestler_list.append(wrestler.name)
+					wrestler.brand = draft.brand
+					wrestler.save()
 				new_draft = DraftHistory(
 					name=name,
 					brand = draft.brand,
