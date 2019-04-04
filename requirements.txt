@@ -1,4 +1,4 @@
-Django==1.9.7
+Django>=1.11.19
 django_countries==5.0
 python-dotenv==0.8.2
 gunicorn==19.6.0
