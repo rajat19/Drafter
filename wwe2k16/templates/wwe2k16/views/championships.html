@@ -1,0 +1,51 @@
+{% extends 'wwe2k16/base.html' %}
+
+{% block title %}Championships{% endblock %}
+
+{% block body %}
+<section>
+	<div class="row">
+		<table class="striped highlight centered">
+			<thead>
+				<tr class="card z-depth-5 black white-text">
+					<th>Championship</th>
+					<th>Type</th>
+					<th>Current Champions</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for championship in all_championships %}
+				<tr class="card z-depth-5">
+					<td>{{championship.name}}</td>
+					<td>
+					{% if championship.belt_type == 'PR' %}
+						World Championship
+					{% elif championship.belt_type == 'SE' %}
+						Secondary Championship
+					{% elif championship.belt_type == 'TE' %}
+						Tertiary Championship
+					{% elif championship.belt_type == 'TT' %}
+						Tag Team Championship
+					{% endif %}
+					</td>
+					<td>
+						<ul>
+						{% for wrestler in championship.champion.all %}
+							<li>{{wrestler.name}}</li>
+						{%endfor%}
+						</ul>
+					</td>
+					<td>
+						{% csrf_token %}
+						<button class="btn waves-effect waves-light red"  onclick="confirmDelete('championship', '{{championship.slug}}')">
+							<i class="material-icons">delete</i>
+						</button>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</section>
+{% endblock %}
