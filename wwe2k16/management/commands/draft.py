@@ -2,6 +2,7 @@ import random
 from django.core.management.base import BaseCommand
 from wwe2k16.models import Championship, Wrestler, Brand, TemporaryDraft
 
+
 class Command(BaseCommand):
 	def _generate_draft(self):
 		championships = Championship.objects.filter(status = True)

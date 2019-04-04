@@ -2,6 +2,7 @@
 from django.core.management.base import BaseCommand
 from wwe2k16.models import Wrestler
 
+
 class Command(BaseCommand):
 	def _create_wrestler(self):
 		# wrestler_data = pd.read_csv('wwe2k16/management/wrestler.csv')

@@ -1,6 +1,7 @@
 from .models import Wrestler, TagTeam, Championship, Event, Match, TagTeamMatch, MatchType
 from django.forms import ModelForm, TextInput, CharField, HiddenInput, ModelChoiceField
 
+
 class WrestlerForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(WrestlerForm, self).__init__(*args, **kwargs)
@@ -10,15 +11,18 @@ class WrestlerForm(ModelForm):
 		model = Wrestler
 		fields = ['name', 'ovr', 'country', 'brand', 'height', 'weight', 'original_primary', 'original_secondary', 'primary', 'secondary', 'tertiary', 'tag_team']
 
+
 class TagTeamForm(ModelForm):
 	class Meta:
 		model = TagTeam
 		fields = ['name', 'members']
 
+
 class ChampionshipForm(ModelForm):
 	class Meta:
 		model = Championship
 		fields = ['name', 'belt_type', 'status', 'champion']
+
 
 class MatchForm(ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -35,7 +39,8 @@ class MatchForm(ModelForm):
 	class Meta:
 		model = Match
 		fields = ['event', 'championship', 'match_type', 'participants']
-		
+
+
 class TagMatchForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		exclude_event = kwargs.pop('exclude_event', None)

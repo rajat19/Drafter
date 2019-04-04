@@ -1,11 +1,10 @@
 name,ovr,orig_prim,primary,secondary,tag_team
 brock lesnar,94,5,2,1,1
-stone cold,94,6,4,,
-john cena,94,16,1,,
-goldberg,93,3,11,,
+goldberg,94,3,11,,
+stone cold,93,6,4,,
+john cena,93,16,1,,
 undertaker,92,7,8,,2
 seth rollins,92,2,7,,
-scott hall,91,,,1,8
 the rock,91,10,4,,2
 randy orton,91,13,3,,1
 shawn michaels,91,4,1,,3
@@ -14,24 +13,25 @@ big show,91,8,2,,1
 kevin nash,90,6,,,8
 jeff hardy,90,3,,6,
 randy savage,90,6,,,6
+scott hall,90,,,1,8
 ultimate warrior,90,1,,,6
 roman reigns,90,3,1,2,2
 sheamus,90,4,1,1,3
 bret hart,90,7,,2,2
 samoa joe,90,,,4,
 dusty rhodes,90,,2,1,
-cm punk,90,6,,2,
 daniel bryan,90,4,,,
+aj styles,89,2,5,2,
 andre the giant,89,1,3,1,
 dean ambrose,89,1,,2,2
 batista,89,6,,,2
 sting,89,6,2,,
 kevin owens,89,1,1,,
 ric flair,89,10,,,1
+big evil,88,,,1,3
 braun strowman,88,,2,5,1
-aj styles,88,2,5,2,
 cesaro,88,,,1,4
-rajat,88,,,1,3
+cm punk,88,6,,2,
 vader,88,3,2,2,
 edge,88,11,2,,1
 bobby lashley,88,2,,2,
@@ -41,7 +41,6 @@ booker t,88,6,1,,
 rusev,88,,,1,
 kurt angle,88,12,,,
 earthquake,87,,,,5
-big daddy v,87,1,,2,1
 road warrior animal,87,,,,3
 bray wyatt,87,1,1,,1
 arn anderson,87,,,,1
@@ -51,10 +50,11 @@ tatsumi fujinami,87,,,1,
 bam bam bigelow,87,1,,,
 diamond dallas page,87,3,,,
 jbl,87,1,,,
-lord tensai,87,,,,
-sami zayn,87,,,,
-sycho sid,87,4,,,
-titus o'neil,87,,,,
+mask kane,87,,,,
+lord tensai,85,,,,
+sami zayn,86,,,,
+sycho sid,88,4,,,
+titus o'neil,85,,,,
 umaga,87,,,,
 typhoon,86,,3,,5
 mark henry,86,2,1,,4
@@ -67,46 +67,47 @@ rikishi,86,,1,1,
 kane,86,3,,1,
 rey mysterio,86,3,,1,
 ryback,86,,,1,
-bad news barrett,86,,,,
+bad news barrett,84,,,,
 barbarian,86,,,,
-darren young,86,,,,
+darren young,85,,,,
 dolph ziggler,86,2,,,
-fit finlay,86,,,,
-goldust,86,,,,
-jinder mahal,86,2,,,
+fit finlay,84,,,,
+goldust,84,,,,
+jinder mahal,85,2,,,
 ricky steamboat,86,,,,
 road warrior hawk,86,,,,
 rob van dam,86,,,,
 roddy piper,86,,,,
-shelton benjamin,86,,,,
+shelton benjamin,84,,,,
 stardust,86,,,,
 the great khali,86,,,,
 warlord,86,,,,
-william regal,86,,,,
+william regal,84,,,,
+big daddy v,85,1,,2,1
 big e,85,,,,4
 erick rowan,85,,,,4
 ezekiel,85,1,,3,
 faarooq,85,1,,2,
 kamala,85,,,,1
-billy gunn,85,,,,
+billy gunn,84,,,,
 brian pillman,85,,,,
-hideo itami,85,,,,
-jack swagger,85,2,,,
-jim neidhart,85,,,,
-mikey whipwreck,85,1,,,
-rhyno,85,1,,,
-sandman,85,5,,,
+hideo itami,83,,,,
+jack swagger,84,2,,,
+jim neidhart,83,,,,
+mikey whipwreck,83,1,,,
+rhyno,84,1,,,
+sandman,84,5,,,
 big boss man,84,,,3,
 kofi kingston,84,,,,3
 the miz,84,1,,1,2
-british bulldog,84,,,,2
-damien mizdow,84,,,,2
+british bulldog,83,,,,2
+damien mizdow,82,,,,2
 ax,84,,,,1
 kama mustafa,84,,,,1
 smash,84,,,,1
-tyson kidd,84,,,,1
+tyson kidd,82,,,,1
 abyss,84,,,,
-fandango,84,,,,
+fandango,82,,,,
 haku,84,,,,
 ken shamrock,84,,,,
 sin cara,84,,,,
@@ -117,16 +118,16 @@ jey uso,83,,,,2
 jimmy uso,83,,,,2
 bo dallas,83,,,,
 butch,83,,,,
-curtis axel,83,,,,
-kalisto,83,,,,
+curtis axel,82,,,,
+kalisto,82,,,,
 luke,83,,,,
 r-truth,83,,,,
 shane mcmahon,83,,,,
 stevie ray,83,,,,
-tyler breeze,83,,,,
+tyler breeze,82,,,,
 konnor,82,,,,3
 viktor,82,,,,3
-adam rose,82,,,,
+adam rose,81,,,,
 colin cassidy,82,,,,
 jake roberts,82,,,,
 mr mcmahon,82,2,,,
@@ -136,7 +137,7 @@ baron corbin,81,,,,
 zack ryder,81,,,,
 aiden english,80,,,,
 blake,80,,,,
-col. Mustafa,80,1,,,
+col. Mustafa,78,1,,,
 enzo amore,80,,,,
 santino marella,80,,,,
 savio vega,80,,,,

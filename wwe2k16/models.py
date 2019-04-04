@@ -13,35 +13,38 @@ STATUS_CHOICES = (
 	(INACTIVE, 'Inactive'),
 )
 
+
 class SoftDeletionQuerySet(QuerySet):
-    def delete(self):
-        return super(SoftDeletionQuerySet, self).update(deleted_at=timezone.now())
+	def delete(self):
+		return super(SoftDeletionQuerySet, self).update(deleted_at=timezone.now())
 
-    def hard_delete(self):
-        return super(SoftDeletionQuerySet, self).delete()
+	def hard_delete(self):
+		return super(SoftDeletionQuerySet, self).delete()
 
-    def alive(self):
-        return self.filter(deleted_at=None)
+	def alive(self):
+		return self.filter(deleted_at=None)
 
-    def dead(self):
-        return self.exclude(deleted_at=None)
+	def dead(self):
+		return self.exclude(deleted_at=None)
+
 
 class SoftDeletionManager(models.Manager):
-    def __init__(self, *args, **kwargs):
-        self.alive_only = kwargs.pop('alive_only', True)
-        super(SoftDeletionManager, self).__init__(*args, **kwargs)
+	def __init__(self, *args, **kwargs):
+		self.alive_only = kwargs.pop('alive_only', True)
+		super(SoftDeletionManager, self).__init__(*args, **kwargs)
 
-    def get_queryset(self):
-        if self.alive_only:
-            return SoftDeletionQuerySet(self.model).filter(deleted_at=None)
-        return SoftDeletionQuerySet(self.model)
+	def get_queryset(self):
+		if self.alive_only:
+			return SoftDeletionQuerySet(self.model).filter(deleted_at=None)
+		return SoftDeletionQuerySet(self.model)
 
-    def hard_delete(self):
-        return self.get_queryset().hard_delete()
+	def hard_delete(self):
+		return self.get_queryset().hard_delete()
+
 
 class TimestampModel(models.Model):
 	created_at = models.DateTimeField(null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now = True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 	class Meta:
 		abstract = True
@@ -53,21 +56,23 @@ class TimestampModel(models.Model):
 		self.updated_at = timezone.now()
 		return super(TimestampModel, self).save(*args, **kwargs)
 
+
 class SoftDeletionModel(TimestampModel):
-    deleted_at = models.DateTimeField(blank=True, null=True)
+	deleted_at = models.DateTimeField(blank=True, null=True)
 
-    objects = SoftDeletionManager()
-    all_objects = SoftDeletionManager(alive_only=False)
+	objects = SoftDeletionManager()
+	all_objects = SoftDeletionManager(alive_only=False)
 
-    class Meta:
-        abstract = True
+	class Meta:
+		abstract = True
 
-    def delete(self):
-        self.deleted_at = timezone.now()
-        super(SoftDeletionModel, self).save()
+	def delete(self):
+		self.deleted_at = timezone.now()
+		super(SoftDeletionModel, self).save()
 
-    def hard_delete(self):
-        super(SoftDeletionModel, self).delete()
+	def hard_delete(self):
+		super(SoftDeletionModel, self).delete()
+
 
 class Brand(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
@@ -78,12 +83,14 @@ class Brand(SoftDeletionModel):
 	def __str__(self):
 		return self.name
 
-	def get_absolute_url(self):
+	@staticmethod
+	def get_absolute_url():
 		return reverse('wwe2k16:brands')
 
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
 		return super(Brand, self).save(*args, **kwargs)
+
 
 class Wrestler(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
@@ -103,7 +110,8 @@ class Wrestler(SoftDeletionModel):
 	def __str__(self):
 		return self.name
 
-	def get_absolute_url(self):
+	@staticmethod
+	def get_absolute_url():
 		return reverse('wwe2k16:wrestler-add')
 
 	def original_titles(self):
@@ -115,12 +123,20 @@ class Wrestler(SoftDeletionModel):
 	def total_points(self):
 		return (3 * self.primary) + (2 * self.secondary) + (1 * self.tertiary) + (1 * self.tag_team) + (0.5 * self.ovr) + (self.original_primary)
 
+	@staticmethod
+	def db_fields():
+		return [
+			'name', 'ovr', 'country', 'brand', 'height', 'weight', 'original_primary',
+			'original_secondary', 'primary', 'secondary', 'tertiary', 'tag_team'
+		]
+
 	def save(self, *args, **kwargs):
 		if not self.country:
 			self.country = 'US'
 
 		self.slug = slugify(self.name)
 		return super(Wrestler, self).save(*args, **kwargs)
+
 
 class TagTeam(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
@@ -139,6 +155,7 @@ class TagTeam(SoftDeletionModel):
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
 		return super(TagTeam, self).save(*args, **kwargs)
+
 
 class Championship(SoftDeletionModel):
 	PRIMARY = 'PR'
@@ -159,9 +176,9 @@ class Championship(SoftDeletionModel):
 
 	def __str__(self):
 		return self.name
-	
-	def is_tagteam(self):
-		return self.belt_type in (self.TAG_TEAM)
+
+	def is_tag_team(self):
+		return self.belt_type in self.TAG_TEAM
 
 	def get_absolute_url(self):
 		return reverse('wwe2k16:championship', kwargs={'slug': self.slug})
@@ -169,6 +186,7 @@ class Championship(SoftDeletionModel):
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
 		return super(Championship, self).save(*args, **kwargs)
+
 
 class Event(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
@@ -189,6 +207,7 @@ class Event(SoftDeletionModel):
 		self.slug = slugify(self.__str__)
 		return super(Event, self).save(*args, **kwargs)
 
+
 class MatchType(SoftDeletionModel):
 	slug = models.SlugField(max_length=40, unique=True)
 	name = models.CharField(max_length=250, unique=True)
@@ -197,12 +216,14 @@ class MatchType(SoftDeletionModel):
 	def __str__(self):
 		return self.name
 
-	def get_absolute_url(self):
+	@staticmethod
+	def get_absolute_url():
 		return reverse('wwe2k16:matchtype-add')
 
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
 		return super(MatchType, self).save(*args, **kwargs)
+
 
 class Match(TimestampModel):
 	event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -216,6 +237,7 @@ class Match(TimestampModel):
 
 	class Meta:
 		verbose_name_plural = 'matches'
+
 
 class TagTeamMatch(TimestampModel):
 	TEAM1 = 't1'
@@ -232,9 +254,10 @@ class TagTeamMatch(TimestampModel):
 
 	def __str__(self):
 		return "%s (%s)" % (self.event, self.tag_championship)
-	
+
 	class Meta:
 		verbose_name_plural = 'tag_team_matches'
+
 
 class ChampionshipHistory(TimestampModel):
 	match = models.ForeignKey(Match, null=True, blank=True)
@@ -244,9 +267,10 @@ class ChampionshipHistory(TimestampModel):
 
 	def __str__(self):
 		return "%s / %s" % (self.match, self.tag_match)
-	
+
 	class Meta:
 		verbose_name_plural = 'championship_history'
+
 
 class DraftHistory(SoftDeletionModel):
 	name = models.CharField(max_length=200, null=True, blank=True)
@@ -260,6 +284,7 @@ class DraftHistory(SoftDeletionModel):
 	class Meta:
 		verbose_name_plural = 'draft_history'
 		unique_together = ['name', 'brand']
+
 
 class TemporaryDraft(TimestampModel):
 	brand = models.ForeignKey(Brand)

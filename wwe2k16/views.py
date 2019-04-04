@@ -1,8 +1,6 @@
 from django.core.management import call_command
-from django.core.urlresolvers import reverse_lazy
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, resolve_url
-from django.utils import timezone
+from django.shortcuts import render, redirect
 from django.views import generic
 from django.views.generic import View
 from django.views.generic.base import TemplateView
@@ -13,26 +11,48 @@ import json
 from .models import Brand, Wrestler, Championship, Event, Match, TagTeamMatch, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
 from .forms import MatchForm, ChampionshipForm, TagTeamForm, TagMatchForm
 
+
+class StaticTemplates:
+	version = 'wwe2k16'
+	create = '{}/forms/create/{}.html'
+	view = '{}/{}.html'
+	update = '{}/forms/update/{}.html'
+
+	def get_create_template_name(self, link):
+		return self.create.format(self.version, link)
+	
+	def get_view_template_name(self, link):
+		return self.view.format(self.version, link)
+
+	def get_update_template_name(self, link):
+		return self.update.format(self.version, link)
+
 class IndexView(TemplateView):
-	template_name='wwe2k16/index.html'
+	template_name = StaticTemplates.get_view_template_name('index')
+
 
 class BrandsView(generic.ListView):
-	template_name = 'wwe2k16/brands.html'
+	template_name = StaticTemplates.get_view_template_name('brands')
 	context_object_name = 'all_brands'
 
 	def get_queryset(self):
 		return Brand.objects.order_by('created_at')
 
+
 class BrandView(generic.DetailView):
 	model = Brand
-	template_name = 'wwe2k16/brand.html'
+	template_name = StaticTemplates.get_view_template_name('brand')
+
 
 class BrandCreate(CreateView):
 	model = Brand
 	fields = ['name', 'color']
-	template_name = 'wwe2k16/forms/create/brand.html'
+	template_name = StaticTemplates.get_create_template_name('brand')
+
 
 class BrandDelete(View):
+
+	@staticmethod
 	def post(self, request, *args, **kwargs):
 		message = 'failed'
 		if 'slug' in kwargs:
@@ -41,27 +61,32 @@ class BrandDelete(View):
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
 
+
 class BrandUpdate(UpdateView):
 	model = Brand
 	fields = ['name', 'color']
-	template_name = 'wwe2k16/forms/create/brand.html'
+	template_name = StaticTemplates.get_create_template_name('brand')
+
 
 class WrestlersView(generic.ListView):
-	template_name = 'wwe2k16/wrestlers.html'
+	template_name = StaticTemplates.get_view_template_name('wrestlers')
 	context_object_name = 'all_wrestlers'
 
 	def get_queryset(self):
 		return Wrestler.objects.order_by('name')
 
+
 class WrestlerView(generic.DetailView):
 	model = Wrestler
-	template_name = 'wwe2k16/wrestler.html'
+	template_name = StaticTemplates.get_view_template_name('wrestler')
+
 
 class WrestlerCreate(CreateView):
 	model = Wrestler
 	fields = ['name', 'ovr', 'country', 'brand', 'height', 'weight', 'original_primary', 'original_secondary', 'primary', 'secondary', 'tertiary', 'tag_team']
 	widgets = {'country': CountrySelectWidget()}
-	template_name = 'wwe2k16/forms/create/wrestler.html'
+	template_name = StaticTemplates.get_create_template_name('wrestler')
+
 
 class WrestlerDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
@@ -72,26 +97,30 @@ class WrestlerDelete(DeleteView):
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
 
+
 class WrestlerUpdate(UpdateView):
 	model = Wrestler
 	fields = ['name', 'ovr', 'country', 'brand', 'height', 'weight', 'original_primary', 'original_secondary', 'primary', 'secondary', 'tertiary', 'tag_team']
 	widgets = {'country': CountrySelectWidget()}
-	template_name = 'wwe2k16/forms/update/wrestler.html'
+	template_name = StaticTemplates.get_update_template_name('wrestler')
+
 
 class TagTeamsView(generic.ListView):
-	template_name = 'wwe2k16/tag_teams.html'
+	template_name = StaticTemplates.get_view_template_name('tag_teams')
 	context_object_name = 'all_tag_teams'
 
 	def get_queryset(self):
 		return TagTeam.objects.order_by('name')
 
+
 class TagTeamView(generic.DetailView):
 	model = TagTeam
-	template_name = 'wwe2k16/tag_team.html'
+	template_name = StaticTemplates.get_view_template_name('tag_team')
+
 
 class TagTeamCreate(CreateView):
 	form_class = TagTeamForm
-	template_name = 'wwe2k16/forms/create/tag_team.html'
+	template_name = StaticTemplates.get_create_template_name('tag_team')
 
 	def get(self, request):
 		form = self.form_class(None)
@@ -120,6 +149,7 @@ class TagTeamCreate(CreateView):
 			}
 		return JsonResponse(data)
 
+
 class TagTeamDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
 		message = 'failed'
@@ -129,23 +159,27 @@ class TagTeamDelete(DeleteView):
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
 
+
 class TagTeamUpdate(UpdateView):
 	model = TagTeam
 	fields = ['name', 'members']
-	template_name = 'wwe2k16/forms/update/tag_team.html'
+	template_name = StaticTemplates.get_update_template_name('tag_team')
+
 
 class EventsView(generic.ListView):
-	template_name = 'wwe2k16/events.html'
+	template_name = StaticTemplates.get_view_template_name('events')
 	context_object_name = 'all_events'
 
 	def get_queryset(self):
 		return Event.objects.order_by('created_at')
 
+
 class EventView(View):
 	model = Event
-	template_name = 'wwe2k16/event.html'
+	template_name = StaticTemplates.get_view_template_name('event')
 	match_form_class = MatchForm
 	tag_match_form_class = TagMatchForm
+
 	def get(self, request, *args, **kwargs):
 		slug = kwargs['slug']
 		event = Event.objects.get(slug=slug)
@@ -157,10 +191,12 @@ class EventView(View):
 			'tag_match_form': tag_match_form,
 		})
 
+
 class EventCreate(CreateView):
 	model = Event
 	fields = ['name', 'brand', 'year']
-	template_name = 'wwe2k16/forms/create/event.html'
+	template_name = StaticTemplates.get_create_template_name('event')
+
 
 class EventDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
@@ -171,25 +207,29 @@ class EventDelete(DeleteView):
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
 
+
 class EventUpdate(UpdateView):
 	model = Event
 	fields = ['name', 'brand', 'year']
-	template_name = 'wwe2k16/forms/update/event.html'
+	template_name = StaticTemplates.get_update_template_name('event')
+
 
 class ChampionshipsView(generic.ListView):
-	template_name = 'wwe2k16/championships.html'
+	template_name = StaticTemplates.get_view_template_name('championships')
 	context_object_name = 'all_championships'
 
 	def get_queryset(self):
 		return Championship.objects.order_by('created_at')
 
+
 class ChampionshipView(generic.DetailView):
 	model = Championship
-	template_name = 'wwe2k16/championship.html'
+	template_name = StaticTemplates.get_view_template_name('championship')
+
 
 class ChampionshipCreate(CreateView):
 	form_class = ChampionshipForm
-	template_name = 'wwe2k16/forms/create/championship.html'
+	template_name = StaticTemplates.get_create_template_name('championship')
 
 	def get(self, request):
 		form = self.form_class(None)
@@ -233,7 +273,8 @@ class ChampionshipCreate(CreateView):
 				'errors': json.loads(form.errors.as_json()),
 			}
 		return JsonResponse(data)
-		
+
+
 class ChampionshipDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
 		message = 'failed'
@@ -246,26 +287,31 @@ class ChampionshipDelete(DeleteView):
 				message = e.message
 		return JsonResponse(message, safe=False)
 
+
 class ChampionshipUpdate(UpdateView):
 	model = Championship
 	fields = ['name', 'belt_type', 'champion']
-	template_name = 'wwe2k16/forms/update/championship.html'
+	template_name = StaticTemplates.get_update_template_name('championship')
+
 
 class MatchTypesView(generic.ListView):
-	template_name = 'wwe2k16/match_types.html'
+	template_name = StaticTemplates.get_view_template_name('match_types')
 	context_object_name = 'all_match_types'
 
 	def get_queryset(self):
 		return MatchType.objects.order_by('name')
 
+
 class MatchTypeView(generic.DetailView):
 	model = MatchType
-	template_name = 'wwe2k16/match_type.html'
+	template_name = StaticTemplates.get_view_template_name('match_type')
+
 
 class MatchTypeCreate(CreateView):
 	model = MatchType
 	fields = ['name', 'no_of_participants']
-	template_name = 'wwe2k16/forms/create/match_type.html'
+	template_name = StaticTemplates.get_create_template_name('match_type')
+
 
 class MatchTypeDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
@@ -276,25 +322,29 @@ class MatchTypeDelete(DeleteView):
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
 
+
 class MatchTypeUpdate(UpdateView):
 	model = MatchType
 	fields = ['name', 'no_of_participants']
-	template_name = 'wwe2k16/forms/update/match_type.html'
+	template_name = StaticTemplates.get_update_template_name('match_type')
+
 
 class MatchesView(generic.ListView):
-	template_name = 'wwe2k16/matches.html'
+	template_name = StaticTemplates.get_view_template_name('matches')
 	context_object_name = 'all_matches'
 
 	def get_queryset(self):
 		return Match.objects.order_by('event')
 
+
 class MatchView(generic.DetailView):
 	model = Match
-	template_name = 'wwe2k16/match.html'
+	template_name = StaticTemplates.get_view_template_name('match')
+
 
 class MatchCreate(View):
 	form_class = MatchForm
-	template_name = 'wwe2k16/forms/create/match.html'
+	template_name = StaticTemplates.get_create_template_name('match')
 
 	def get(self, request):
 		form = self.form_class(None)
@@ -351,6 +401,7 @@ class MatchCreate(View):
 			}
 		return JsonResponse(data)
 
+
 class MatchDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
 		message = 'failed'
@@ -360,14 +411,16 @@ class MatchDelete(DeleteView):
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
 
+
 class MatchUpdate(UpdateView):
 	model = Match
 	fields = ['event', 'match_type', 'participants']
-	template_name = 'wwe2k16/forms/update/match.html'
+	template_name = StaticTemplates.get_update_template_name('match')
+
 
 class TagTeamMatchCreate(View):
 	form_class = TagMatchForm
-	template_name = 'wwe2k16/forms/create/tag_team_match.html'
+	template_name = StaticTemplates.get_create_template_name('tag_team_match')
 
 	def get(self, request):
 		form = self.form_class(None)
@@ -430,6 +483,7 @@ class TagTeamMatchCreate(View):
 			}
 		return JsonResponse(data)
 
+
 class TagTeamMatchDelete(DeleteView):
 	def post(self, request, *args, **kwargs):
 		message = 'failed'
@@ -438,6 +492,7 @@ class TagTeamMatchDelete(DeleteView):
 			TagTeamMatch.objects.get(pk=pk).delete()
 			message = 'deleted'
 		return JsonResponse(message, safe=False)
+
 
 class DraftHistoryCreate(View):
 	def post(self, request):
@@ -468,8 +523,9 @@ class DraftHistoryCreate(View):
 			}
 		return JsonResponse(message, safe=False)
 
+
 class DraftsView(View):
-	template_name = 'wwe2k16/draft.html'
+	template_name = StaticTemplates.get_view_template_name('draft')
 
 	def get(self, request):
 		drafts = TemporaryDraft.objects.all()
@@ -478,6 +534,7 @@ class DraftsView(View):
 	def post(self, request):
 		call_command('draft')
 		return redirect('wwe2k16:drafts')
+
 
 class DraftDelete(View):
 	def post(self, request):
@@ -488,8 +545,8 @@ class DraftDelete(View):
 		else: message = 'failed'
 		return JsonResponse(message, safe=False)
 
+
 def get_wrestlers(request):
-	mimetype = 'application/json'
 	if request.is_ajax():
 		q = request.GET.get('term', '')
 		wrestlers = Wrestler.objects.filter(name__icontains = q)
