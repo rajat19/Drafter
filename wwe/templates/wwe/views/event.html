@@ -1,0 +1,213 @@
+{% extends 'wwe/base.html' %}
+
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block body %}
+<section>
+	<div class="row">
+		<div class="input-field col s12">
+			{% csrf_token %}
+			<button class="btn modal-trigger waves-effect waves-light black lighten-1" data-target="matchModal">Add New Match
+				<span><i class="fa fa-plus"></i></span>
+			</button>
+			<button class="btn modal-trigger waves-effect waves-light black lighten-1" data-target="tagMatchModal">Add New Tag Match
+				<span><i class="fa fa-plus"></i></span>
+			</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col s12">
+			<div class="card z-depth-5">
+				<div class="card-content black">
+					<span class="card-title white-text center">{{event.name}}</span>
+					<div class="row">
+						<table class="striped highlight centered">
+							<thead>
+								<tr class="card z-depth-5 {{event.brand.color|default:'purple'}} darken-3 white-text">
+									<th>Championship</th>
+									<th>Participants</th>
+									<th>Winner</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for match in event.match_set.all %}
+								<tr class="card z-depth-5" id="match-{{match.pk}}">
+									<td>{{match.championship}}</td>
+									<td>
+										<ul>
+										{% for wrestler in match.participants.all %}
+											<li>{{wrestler}}</li>
+										{% endfor %}
+										</ul>
+									</td>
+									<td>{{match.winner}}</td>
+									<td>
+										<button class="btn waves-effect waves-light red" onclick="deleteRequest('match', '{{match.pk}}')">
+											<i class="material-icons">delete</i>
+										</button>
+									</td>
+								</tr>
+								{% empty %}
+								<tr class="card z-depth-5">
+									<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
+										No Match Found
+									</td>
+								</tr>
+								{% endfor %}
+								{% for match in event.tagteammatch_set.all %}
+								<tr class="card z-depth-5" id="match-{{match.pk}}">
+										<td>{{match.tag_championship}}</td>
+										<td>
+											<ul>
+											{% for wrestler in match.team1.all %}
+												<li>{{wrestler}}</li>
+											{% endfor %}
+											{% for wrestler in match.team2.all %}
+												<li>{{wrestler}}</li>
+											{% endfor %}
+											</ul>
+										</td>
+										<td>
+											<ul>
+											{% if match.tag_winner == 't1' %}
+												{% for wrestler in match.team1.all %}
+													<li>{{wrestler}}</li>
+												{% endfor %}
+											{% elif match.tag_winner == 't2' %}
+												{% for wrestler in match.team2.all %}
+													<li>{{wrestler}}</li>
+												{% endfor %}
+											{% endif %}
+											</ul>
+										</td>
+										<td>
+											<button class="btn waves-effect waves-light red"  onclick="deleteRequest('tagmatch', '{{match.pk}}')">
+												<i class="material-icons">delete</i>
+											</button>
+										</td>
+								</tr>
+								{% empty %}
+								<tr class="card z-depth-5">
+									<td colspan="4" class="center {{event.brand.color|default:'purple'}} darken-3 white-text">
+										No Tag Match Found
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<div id="matchModal" class="modal">
+	<div class="modal-content">
+		<h4>New Singles Match</h4>
+		{% include 'wwe/forms/template.html' with form=match_form %}
+		<div class="card z-depth-3 red" id="error-parent" style="display: none;">
+			<div class="card-content red" id="error"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn modal-action waves-effect waves-light green lighten-1" id="addMatch">
+			Add Match
+		</button>
+	</div>
+</div>
+
+<div id="tagMatchModal" class="modal">
+	<div class="modal-content">
+		<h4>New Tag Match</h4>
+		{% include 'wwe/forms/template.html' with form=tag_match_form %}
+		<div class="card z-depth-3 red" id="error-parent-tag" style="display: none;">
+			<div class="card-content red" id="error-tag"></div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn modal-action waves-effect waves-light green lighten-1" id="addTagMatch">
+			Add Tag Match
+		</button>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+	function setAutocompleteData() {
+		const chipData = $('#id_participants').material_chip('data');
+		const customData = {};
+		chipData.forEach(el => {
+			customData[el.tag] = null;
+		});
+		$('#id_winner').autocomplete({
+			data: customData,
+			minLength: 1,
+		});
+	}
+
+	$(document).ready(() => {
+		getWrestlersData(['team1', 'team2', 'participants']);
+		$('#id_participants').on('chip.add', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#id_participants').on('chip.delete', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#addMatch').click((e) => {
+			const chipData = $('#id_participants').material_chip('data');
+			const options = [];
+			chipData.forEach(el => {
+				options.push(el.tag);
+			});
+			const event = $('#id_event').val();
+			const championship = $('#id_championship').val();
+			const match_type = $('#id_match_type').val();
+			const new_champion = $('#id_winner').val();
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe/match/add/", {
+				event,
+				championship,
+				match_type,
+				new_champion,
+				csrfmiddlewaretoken,
+				participants_list: options,
+			},
+			(response, status) => {
+				handleFormResponse(response);
+			});
+		});
+
+		$('#addTagMatch').click((e) => {
+			const team1Data = $('#id_team1').material_chip('data');
+			const team2Data = $('#id_team2').material_chip('data');
+			const options = {
+				team1: [], team2: [],
+			};
+			team1Data.forEach(el => {
+				options.team1.push(el.tag);
+			});
+			team2Data.forEach(el => {
+				options.team2.push(el.tag);
+			});
+			const event = $('#id_event').val();
+			const tag_championship = $('#id_tag_championship').val();
+			const tag_winner = $('#id_tag_winner').val();
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe/tagmatch/add/", {
+				event,
+				tag_championship,
+				tag_winner,
+				csrfmiddlewaretoken,
+				team1_list: options.team1,
+				team2_list: options.team2,
+			},
+			(response, status) => {
+				handleFormResponse(response, 'tag');
+			});
+		});
+	});
+</script>
+{% endblock %}

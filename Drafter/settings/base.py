@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'wwe2k16.apps.Wwe2K16Config',
+    'wwe.apps.wweConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
