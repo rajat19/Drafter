@@ -1,10 +1,10 @@
-from django.contrib.postgres.fields import ArrayField
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils.text import slugify
 from django.utils import timezone
 from django_countries.fields import CountryField
+import jsonfield
 
 INACTIVE = False
 ACTIVE = True
@@ -283,11 +283,7 @@ class ChampionshipHistory(TimestampModel):
 class DraftHistory(SoftDeletionModel):
     name = models.CharField(max_length=200, null=True, blank=True)
     brand = models.ForeignKey(Brand)
-    data = ArrayField(
-        models.CharField(null=True, blank=True, max_length=1000),
-        size=50,
-        null=True
-    )
+    data = jsonfield.JSONField()
 
     class Meta:
         verbose_name_plural = 'draft_history'
