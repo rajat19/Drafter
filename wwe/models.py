@@ -196,7 +196,7 @@ class Event(SoftDeletionModel):
     slug = models.SlugField(max_length=40, unique=True)
     name = models.CharField(max_length=250)
     year = models.CharField(max_length=4)
-    brand = models.ForeignKey(Brand, blank=True, default='', null=True)
+    brand = models.ForeignKey(Brand, blank=True, default='', null=True, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ['name', 'year']
@@ -235,10 +235,10 @@ class MatchType(SoftDeletionModel):
 
 class Match(TimestampModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    championship = models.ForeignKey(Championship, null=True, blank=True)
-    match_type = models.ForeignKey(MatchType, blank=True, default='')
+    championship = models.ForeignKey(Championship, null=True, blank=True, on_delete=models.CASCADE)
+    match_type = models.ForeignKey(MatchType, blank=True, default='', on_delete=models.CASCADE)
     participants = models.ManyToManyField(Wrestler, blank=True, related_name='participants')
-    winner = models.ForeignKey(Wrestler, blank=True, related_name='winner', null=True)
+    winner = models.ForeignKey(Wrestler, blank=True, related_name='winner', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s (%s)" % (self.event, self.championship)
@@ -255,7 +255,7 @@ class TagTeamMatch(TimestampModel):
         (TEAM2, 'Team 2'),
     )
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    tag_championship = models.ForeignKey(Championship, null=True, blank=True)
+    tag_championship = models.ForeignKey(Championship, null=True, blank=True, on_delete=models.CASCADE)
     team1 = models.ManyToManyField(Wrestler, related_name='team1', blank=True)
     team2 = models.ManyToManyField(Wrestler, related_name='team2', blank=True)
     tag_winner = models.CharField(choices=WINNER_CHOICES, default=TEAM1, max_length=2)
@@ -268,8 +268,8 @@ class TagTeamMatch(TimestampModel):
 
 
 class ChampionshipHistory(TimestampModel):
-    match = models.ForeignKey(Match, null=True, blank=True)
-    tag_match = models.ForeignKey(TagTeamMatch, null=True, blank=True)
+    match = models.ForeignKey(Match, null=True, blank=True, on_delete=models.CASCADE)
+    tag_match = models.ForeignKey(TagTeamMatch, null=True, blank=True, on_delete=models.CASCADE)
     old_champion = models.ManyToManyField(Wrestler, blank=True, related_name='old_champion')
     new_champion = models.ManyToManyField(Wrestler, blank=True, related_name='new_champion')
 
@@ -282,7 +282,7 @@ class ChampionshipHistory(TimestampModel):
 
 class DraftHistory(SoftDeletionModel):
     name = models.CharField(max_length=200, null=True, blank=True)
-    brand = models.ForeignKey(Brand)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     data = jsonfield.JSONField()
 
     class Meta:
@@ -291,5 +291,5 @@ class DraftHistory(SoftDeletionModel):
 
 
 class TemporaryDraft(TimestampModel):
-    brand = models.ForeignKey(Brand)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     wrestlers = models.ManyToManyField(Wrestler, blank=True)
