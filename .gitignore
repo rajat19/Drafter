@@ -107,6 +107,9 @@ ENV/
 .vscode/*
 !.vscode/launch.json
 
+# Idea
+.idea/*
+
 # Private (production) data
 garbage/
 private

@@ -27,4 +27,3 @@ The project was made to create **online wwe drafts** based on some algorithm
 ### Important commands
 - `django-admin.py startproject [PROJECT_NAME]`
 - `python3 manage.py startapp [APP_NAME]`
- 
