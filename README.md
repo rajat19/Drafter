@@ -6,24 +6,37 @@ Following can be configured from the website
 - Tag Teams
 - Wrestler Profiles
 
-The project was made to create **online wwe drafts** based on some algorithm
+The project was made to create **online templates.wwe drafts** based on some algorithm
 
 ### Current Champions (Original)
 |Championship|Champion|
 |---|---|
-|WWE Universal|Brock Lesnar|
-|WWE|Daniel Bryan|
-|WWE Intercontinental|Bobby Lashley|
-|WWE United States|Samoa Joe|
-|WWE Raw Women's|Ronda Rousey|
-|WWE Smackdown Women's|Charlotte Flair|
-|WWE Cruserweight|Buddy Murphy|
-|WWE Raw Tag Team|Dash Wilder/Scott Dawson|
-|WWE Smackdown Tag Team|Jey Uso/Jimmy Uso|
+|WWE Universal|Braun Strowman|
+|WWE|Drew McIntyre|
+|WWE Intercontinental|Sami Zayn|
+|WWE United States|Andrade Cien Almas|
+|WWE Raw Women's|Becky Lynch|
+|WWE Smackdown Women's|Bayley|
+|WWE Raw Tag Team|Angelo Dawkins/Montez Ford|
+|WWE Smackdown Tag Team|John Morrison/The Miz|
 |WWE Women's Tag Team|Bayley/Sasha Banks|
-|NXT|Hasnain Alaam|
+|WWE 24/7|Mojo Rawley|
+|NXT Cruiserweight|Jordan Devlin|
+|NXT|Adam Cole|
+|NXT North American|Keith Lee|
+|NXT Tag Team|Matt Riddle/Pete Dunne|
+|NXT Women's|Rhea Ripley|
+|NXT United Kingdom|Walter|
+|NXT UK Tag Team|Mark Coffey/Wolfgang|
+|NXT UK Women's|Kay Lee Ray|
 
 
 ### Important commands
-- `django-admin.py startproject [PROJECT_NAME]`
-- `python3 manage.py startapp [APP_NAME]`
+```shell script
+# django-admin startproject Drafter
+
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+python3 manage.py startapp wwe
+```

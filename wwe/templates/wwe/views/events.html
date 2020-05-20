@@ -1,0 +1,25 @@
+{% extends 'wwe/base.html' %}
+
+{% block title %}Events{% endblock %}
+
+{% block body %}
+<section>
+	<div class="row">
+	{% for event in all_events %}
+		<div class="col m6 s12 center" id="event-{{event.slug}}">
+			<div class="card z-depth-5">
+				<div class="card-content {{event.brand.color|default:'black'}}">
+					<a href="{% url 'wwe:event' event.slug %}" class="white-text">
+						<span class="card-title">{{event.name}} ({{event.year}}) </span>
+					</a>
+					{% csrf_token %}
+					<button class="btn-floating halfway-fab waves-effect waves-light white"  onclick="confirmDelete('event', '{{event.slug}}')">
+						<i class="material-icons {{event.brand.color|default:'black'}}-text">delete</i>
+					</button>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+</section>
+{% endblock %}

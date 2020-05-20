@@ -1,0 +1,27 @@
+{% extends 'wwe/base.html' %}
+{% block title %}Save Brand{% endblock %}
+
+{% block body %}
+<section>
+	<div class="row">
+		<div class="col s12 m8 offset-m2">
+			<div class="card z-depth-5">
+				<div class="card-content">
+					<span class="card-title">Save Brand</span>
+					<form action="" method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+						{% include 'wwe/forms/template.html' %}
+						{% include 'wwe/forms/error.html' %}
+						<div class="row">
+							<div class="input-field col s12">
+								<button class="btn waves-effect waves-light green lighten-1" type="submit">Save Brand
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

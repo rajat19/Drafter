@@ -1,0 +1,53 @@
+{% load template_extras %}
+{% for field in form %}
+	<div class="row">
+		{% if field|field_type == 'ClearableFileInput' %}
+			<div class="input-field file-field col s12">
+				<div class="btn green lighten-1">
+					<span>{{ field.label }}</span>
+					<input type="file" name="{{ field.name }}">
+				</div>
+				<div class="file-path-wrapper">
+					<input class="file-path validate" type="text">
+				</div>
+			</div>
+		{% elif field|field_type == 'DateTimeInput' %}
+			<div class="input-field col s12">
+				<span class="red-text">
+					{{ field.errors }}
+				</span>
+				<input type="text" name="{{ field.name }}" class="datepicker">
+				{{ field.label_tag }}
+			</div>
+		{% elif field|field_type == 'Textarea' %}
+			<div class="input-field col s12">
+				<span class="red-text">
+					{{ field.errors }}
+				</span>
+				<textarea name="{{ field.name }}" id="" cols="30" rows="10" class="materialize-textarea"></textarea>
+				{{ field.label_tag }}
+			</div>
+		{% elif field|field_type == 'SelectMultiple' %}
+			<div class="input-field col s12">
+				<span class="red-text">
+					{{ field.errors }}
+				</span>
+				<div class="chips chips-autocomplete" id="{{ field.id_for_label }}">
+				</div>
+				{{ field.label_tag }}
+			</div>
+		{% elif field|field_type == 'HiddenInput' %}
+			<div class="input-field col s12">
+				{{ field }}
+			</div>
+		{% else %}
+			<div class="input-field col s12">
+				<span class="red-text">
+					{{ field.errors }}
+				</span>
+				{{ field }}
+				{{ field.label_tag }}
+			</div>
+		{% endif %}
+	</div>
+{% endfor %}

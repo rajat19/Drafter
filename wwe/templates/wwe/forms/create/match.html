@@ -1,0 +1,76 @@
+{% extends 'wwe/base.html' %}
+{% block title %}Save Match{% endblock %}
+
+{% block body %}
+<section>
+	<div class="row">
+		<div class="col s12 m8 offset-m2">
+			<div class="card z-depth-5">
+				<div class="card-content">
+					<span class="card-title">Save Match</span>
+					{% csrf_token %}
+					{% include 'wwe/forms/template.html' %}
+					<div class="card z-depth-3 red" id="error-parent" style="display: none;">
+						<div class="card-content" id="error"></div>
+					</div>
+					<div class="row">
+						<div class="input-field col s12">
+							<button class="btn waves-effect waves-light green lighten-1" id="submit">Save Match
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+	function setAutocompleteData() {
+		const chipData = $('#id_participants').material_chip('data');
+		const customData = {};
+		chipData.forEach(el => {
+			customData[el.tag] = null;
+		});
+		$('#id_winner').autocomplete({
+			data: customData,
+			minLength: 1,
+		});
+	}
+
+	$(document).ready(() => {
+		getWrestlersData('participants');
+		$('#id_participants').on('chip.add', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#id_participants').on('chip.delete', (e, chip) => {
+			setAutocompleteData();
+		});
+		$('#submit').click((e) => {
+			const chipData = $('#id_participants').material_chip('data');
+			const options = [];
+			chipData.forEach(el => {
+				options.push(el.tag);
+			});
+			const event = $('#id_event').val();
+			const championship = $('#id_championship').val();
+			const match_type = $('#id_match_type').val();
+			const new_champion = $('#id_winner').val();
+			const csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+			$.post("/wwe/match/add/", {
+				event,
+				championship,
+				match_type,
+				new_champion,
+				csrfmiddlewaretoken,
+				participants_list: options,
+			},
+			(response, status) => {
+				handleFormResponse(response);
+			});
+		});
+	});
+</script>
+{% endblock %}

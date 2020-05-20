@@ -17,14 +17,14 @@ from django.conf.urls.static import static
 from django.conf.urls import url, include
 from django.conf import settings
 from django.contrib import admin
-from wwe2k16.views import IndexView
+from wwe.views import IndexView
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^admin/', admin.site.urls),
-    url(r'^wwe2k16/', include('wwe2k16.urls')),
+    url(r'^wwe/', include('wwe.urls')),
 ]
 
 if settings.DEBUG:
-	urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
-	urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

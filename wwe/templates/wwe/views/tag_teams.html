@@ -1,0 +1,24 @@
+{% extends 'wwe/base.html' %}
+
+{% block body %}
+{% load template_extras %}
+<section>
+	<div class="row">
+	{% for tag_team in all_tag_teams %}
+		<div class="col m3 s12 center" id="tagteam-{{tag_team.slug}}">
+			<div class="card z-depth-5">
+				<div class="card-content black white-text">
+					<a href="{% url 'wwe:tag_team' tag_team.slug %}" class="gray-text">
+						<span class="card-title">{{tag_team.name}}</span>
+					</a>
+					{% csrf_token %}
+					<button class="btn-floating halfway-fab waves-effect waves-light white"  onclick="confirmDelete('tagteam', '{{tag_team.slug}}')">
+						<i class="material-icons black-text">delete</i>
+					</button>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+</section>
+{% endblock %}

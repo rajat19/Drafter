@@ -1,0 +1,35 @@
+{% extends 'wwe/base.html' %}
+
+{% block title %}{{ championship.name }}{% endblock %}
+
+{% block body %}
+<section>
+	<div class="row">
+		<div class="col s12">
+			<div class="card z-depth-5">
+				<div class="card-content black white-text">
+					<span class="card-title center">{{championship.name}}</span>
+					<div class="row">
+						<div class="col m12 s12 center">
+							<table>
+								<tr>
+									<td>Belt Type: </td>
+									<td>{{ championship.belt_type }}</td>
+								</tr>
+								<tr>
+									<td>Champions: </td>
+								{% for champ in championship.champion.all %}
+									<td>{{ champ.name }}</td>
+								{% empty %}
+									No champion
+								{% endfor %}
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}
