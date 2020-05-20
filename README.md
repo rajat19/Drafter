@@ -12,7 +12,7 @@ The project was made to create **online templates.wwe drafts** based on some alg
 |Championship|Champion|
 |---|---|
 |WWE Universal|Braun Strowman|
-|WWE|Brock Lesnar|
+|WWE|Drew McIntyre|
 |WWE Intercontinental|Sami Zayn|
 |WWE United States|Andrade Cien Almas|
 |WWE Raw Women's|Becky Lynch|

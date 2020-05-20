@@ -8,122 +8,108 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_countries.widgets import CountrySelectWidget
 import json
 
-from .models import Brand, Wrestler, Championship, Event, Match, TagTeamMatch, MatchType, TagTeam, ChampionshipHistory, DraftHistory, TemporaryDraft
+from .models import Brand, Wrestler, Championship, Event, Match, TagTeamMatch, MatchType, TagTeam, ChampionshipHistory, \
+    DraftHistory, TemporaryDraft
 from .forms import MatchForm, ChampionshipForm, TagTeamForm, TagMatchForm
+from common.constants import Constants, TemplateConstants, WweConstants
+from common.helper import Helper, StaticTemplates
 
-
-class StaticTemplates:
-    version = 'wwe'
-    create = '{}/forms/create/{}.html'
-    view = '{}/{}.html'
-    update = '{}/forms/update/{}.html'
-
-    def get_create_template_name(self, link):
-        return self.create.format(self.version, link)
-
-    def get_view_template_name(self, link):
-        return self.view.format(self.version, link)
-
-    def get_update_template_name(self, link):
-        return self.update.format(self.version, link)
-
-
-static_templates = StaticTemplates()
+static_templates = StaticTemplates(WweConstants.app_name)
 
 
 class IndexView(TemplateView):
-    template_name = static_templates.get_view_template_name('index')
+    template_name = static_templates.view(TemplateConstants.index_template_name)
 
 
 class BrandsView(generic.ListView):
-    template_name = static_templates.get_view_template_name('brands')
-    context_object_name = 'all_brands'
+    template_name = static_templates.view(TemplateConstants.brands_template_name)
+    context_object_name = WweConstants.brands_context_name
 
     def get_queryset(self):
-        return Brand.objects.order_by('created_at')
+        return Brand.objects.order_by(Constants.created_at)
 
 
 class BrandView(generic.DetailView):
     model = Brand
-    template_name = static_templates.get_view_template_name('brand')
+    template_name = static_templates.view(TemplateConstants.brand_template_name)
 
 
 class BrandCreate(CreateView):
     model = Brand
     fields = Brand.db_fields()
-    template_name = static_templates.get_create_template_name('brand')
+    template_name = static_templates.create(TemplateConstants.brand_template_name)
 
 
 class BrandDelete(View):
 
     def post(self, request, *args, **kwargs):
-        message = 'failed'
-        if 'slug' in kwargs:
-            slug = kwargs['slug']
+        message = Constants.message_failed
+        if Constants.slug in kwargs:
+            slug = kwargs[Constants.slug]
             Brand.objects.get(slug=slug).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
 class BrandUpdate(UpdateView):
     model = Brand
     fields = Brand.db_fields()
-    template_name = static_templates.get_create_template_name('brand')
+    template_name = static_templates.create(TemplateConstants.brand_template_name)
 
 
 class WrestlersView(generic.ListView):
-    template_name = static_templates.get_view_template_name('wrestlers')
-    context_object_name = 'all_wrestlers'
+    template_name = static_templates.view(TemplateConstants.wrestlers_template_name)
+    context_object_name = WweConstants.wrestlers_context_name
 
     def get_queryset(self):
-        return Wrestler.objects.order_by('name')
+        return Wrestler.objects.order_by(Constants.name)
 
 
 class WrestlerView(generic.DetailView):
     model = Wrestler
-    template_name = static_templates.get_view_template_name('wrestler')
+    template_name = static_templates.view(TemplateConstants.wrestler_template_name)
 
 
 class WrestlerCreate(CreateView):
     model = Wrestler
     fields = Wrestler.db_fields()
-    widgets = {'country': CountrySelectWidget()}
-    template_name = static_templates.get_create_template_name('wrestler')
+    widgets = Helper.get_country_widget()
+    template_name = static_templates.create(TemplateConstants.wrestler_template_name)
 
 
 class WrestlerDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
-        if 'slug' in kwargs:
-            slug = kwargs['slug']
+        message = Constants.message_failed
+        if Constants.slug in kwargs:
+            slug = kwargs[Constants.slug]
             Wrestler.objects.get(slug=slug).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
 class WrestlerUpdate(UpdateView):
     model = Wrestler
     fields = Wrestler.db_fields()
-    widgets = {'country': CountrySelectWidget()}
-    template_name = static_templates.get_update_template_name('wrestler')
+    widgets = Helper.get_country_widget()
+    template_name = static_templates.update(TemplateConstants.wrestler_template_name)
 
 
 class TagTeamsView(generic.ListView):
-    template_name = static_templates.get_view_template_name('tag_teams')
-    context_object_name = 'all_tag_teams'
+    template_name = static_templates.view(TemplateConstants.tag_teams_template_name)
+    context_object_name = WweConstants.tag_teams_context_name
 
     def get_queryset(self):
-        return TagTeam.objects.order_by('name')
+        return TagTeam.objects.order_by(Constants.name)
 
 
 class TagTeamView(generic.DetailView):
     model = TagTeam
-    template_name = static_templates.get_view_template_name('tag_team')
+    template_name = static_templates.view(TemplateConstants.tag_team_template_name)
 
 
 class TagTeamCreate(CreateView):
     form_class = TagTeamForm
-    template_name = static_templates.get_create_template_name('tag_team')
+    template_name = static_templates.create(TemplateConstants.tag_team_template_name)
 
     def get(self, request):
         form = self.form_class(None)
@@ -140,11 +126,11 @@ class TagTeamCreate(CreateView):
             tag_team = form.save(commit=False)
             tag_team.save()
             for x in modified_members_list:
-                member = Wrestler.objects.get(name = x)
+                member = Wrestler.objects.get(name=x)
                 tag_team.members.add(member)
             data = {
                 'result': 1,
-                'message': 'Successfully added the tag team',
+                'message': Constants.message_tag_team,
             }
         else:
             data = {
@@ -156,36 +142,36 @@ class TagTeamCreate(CreateView):
 
 class TagTeamDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
-        if 'slug' in kwargs:
-            slug = kwargs['slug']
+        message = Constants.message_failed
+        if Constants.slug in kwargs:
+            slug = kwargs[Constants.slug]
             TagTeam.objects.get(slug=slug).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
 class TagTeamUpdate(UpdateView):
     model = TagTeam
-    fields = ['name', 'members']
-    template_name = static_templates.get_update_template_name('tag_team')
+    fields = [Constants.name, Constants.members]
+    template_name = static_templates.update(TemplateConstants.tag_team_template_name)
 
 
 class EventsView(generic.ListView):
-    template_name = static_templates.get_view_template_name('events')
-    context_object_name = 'all_events'
+    template_name = static_templates.view(TemplateConstants.events_template_name)
+    context_object_name = WweConstants.events_context_name
 
     def get_queryset(self):
-        return Event.objects.order_by('created_at')
+        return Event.objects.order_by(Constants.created_at)
 
 
 class EventView(View):
     model = Event
-    template_name = static_templates.get_view_template_name('event')
+    template_name = static_templates.view(TemplateConstants.event_template_name)
     match_form_class = MatchForm
     tag_match_form_class = TagMatchForm
 
     def get(self, request, *args, **kwargs):
-        slug = kwargs['slug']
+        slug = kwargs[Constants.slug]
         event = Event.objects.get(slug=slug)
         match_form = self.match_form_class(exclude_event=True, initial={'event': event.pk})
         tag_match_form = self.tag_match_form_class(exclude_event=True, initial={'event': event.pk})
@@ -199,27 +185,27 @@ class EventView(View):
 class EventCreate(CreateView):
     model = Event
     fields = Event.db_fields()
-    template_name = static_templates.get_create_template_name('event')
+    template_name = static_templates.create(TemplateConstants.event_template_name)
 
 
 class EventDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
-        if 'slug' in kwargs:
-            slug = kwargs['slug']
+        message = Constants.message_failed
+        if Constants.slug in kwargs:
+            slug = kwargs[Constants.slug]
             Event.objects.get(slug=slug).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
 class EventUpdate(UpdateView):
     model = Event
     fields = Event.db_fields()
-    template_name = static_templates.get_update_template_name('event')
+    template_name = static_templates.update(TemplateConstants.event_template_name)
 
 
 class ChampionshipsView(generic.ListView):
-    template_name = static_templates.get_view_template_name('championships')
+    template_name = static_templates.view('championships')
     context_object_name = 'all_championships'
 
     def get_queryset(self):
@@ -228,12 +214,12 @@ class ChampionshipsView(generic.ListView):
 
 class ChampionshipView(generic.DetailView):
     model = Championship
-    template_name = static_templates.get_view_template_name('championship')
+    template_name = static_templates.view('championship')
 
 
 class ChampionshipCreate(CreateView):
     form_class = ChampionshipForm
-    template_name = static_templates.get_create_template_name('championship')
+    template_name = static_templates.create('championship')
 
     def get(self, request):
         form = self.form_class(None)
@@ -252,7 +238,7 @@ class ChampionshipCreate(CreateView):
                 championship.save()
                 belt_type = championship.belt_type
                 for x in modified_champions_list:
-                    champion = Wrestler.objects.get(name = x)
+                    champion = Wrestler.objects.get(name=x)
                     championship.champion.add(champion)
                     if belt_type == 'PR':
                         champion.primary += 1
@@ -272,21 +258,22 @@ class ChampionshipCreate(CreateView):
                     'result': 1,
                     'message': str(e),
                 }
-        else: data = {
-            'result': 0,
-            'errors': json.loads(form.errors.as_json()),
-        }
+        else:
+            data = {
+                'result': 0,
+                'errors': json.loads(form.errors.as_json()),
+            }
         return JsonResponse(data)
 
 
 class ChampionshipDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
-        if 'slug' in kwargs:
+        message = Constants.message_failed
+        if Constants.slug in kwargs:
             try:
-                slug = kwargs['slug']
+                slug = kwargs[Constants.slug]
                 Championship.objects.get(slug=slug).delete()
-                message = 'deleted'
+                message = Constants.message_deleted
             except Exception as e:
                 message = str(e)
         return JsonResponse(message, safe=False)
@@ -295,11 +282,11 @@ class ChampionshipDelete(DeleteView):
 class ChampionshipUpdate(UpdateView):
     model = Championship
     fields = ['name', 'belt_type', 'champion']
-    template_name = static_templates.get_update_template_name('championship')
+    template_name = static_templates.update('championship')
 
 
 class MatchTypesView(generic.ListView):
-    template_name = static_templates.get_view_template_name('match_types')
+    template_name = static_templates.view('match_types')
     context_object_name = 'all_match_types'
 
     def get_queryset(self):
@@ -308,33 +295,33 @@ class MatchTypesView(generic.ListView):
 
 class MatchTypeView(generic.DetailView):
     model = MatchType
-    template_name = static_templates.get_view_template_name('match_type')
+    template_name = static_templates.view('match_type')
 
 
 class MatchTypeCreate(CreateView):
     model = MatchType
     fields = ['name', 'no_of_participants']
-    template_name = static_templates.get_create_template_name('match_type')
+    template_name = static_templates.create('match_type')
 
 
 class MatchTypeDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
-        if 'slug' in kwargs:
-            slug = kwargs['slug']
+        message = Constants.message_failed
+        if Constants.slug in kwargs:
+            slug = kwargs[Constants.slug]
             MatchType.objects.get(slug=slug).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
 class MatchTypeUpdate(UpdateView):
     model = MatchType
     fields = ['name', 'no_of_participants']
-    template_name = static_templates.get_update_template_name('match_type')
+    template_name = static_templates.update('match_type')
 
 
 class MatchesView(generic.ListView):
-    template_name = static_templates.get_view_template_name('matches')
+    template_name = static_templates.view('matches')
     context_object_name = 'all_matches'
 
     def get_queryset(self):
@@ -343,12 +330,12 @@ class MatchesView(generic.ListView):
 
 class MatchView(generic.DetailView):
     model = Match
-    template_name = static_templates.get_view_template_name('match')
+    template_name = static_templates.view('match')
 
 
 class MatchCreate(View):
     form_class = MatchForm
-    template_name = static_templates.get_create_template_name('match')
+    template_name = static_templates.create('match')
 
     def get(self, request):
         form = self.form_class(None)
@@ -367,7 +354,7 @@ class MatchCreate(View):
                 championship = match.championship
                 belt_type = championship.belt_type
                 old_champion = championship.champion.all()[0]
-                match.winner = Wrestler.objects.get(name = request_dict['new_champion'][0])
+                match.winner = Wrestler.objects.get(name=request_dict['new_champion'][0])
                 new_champion = match.winner
                 match.championship.champion.set([new_champion])
                 match.save()
@@ -387,7 +374,7 @@ class MatchCreate(View):
                     championship_history.new_champion.add(new_champion)
 
                 for x in modified_participants_list:
-                    participant = Wrestler.objects.get(name = x)
+                    participant = Wrestler.objects.get(name=x)
                     match.participants.add(participant)
 
                 data = {
@@ -399,32 +386,33 @@ class MatchCreate(View):
                     'result': 1,
                     'message': e.message,
                 }
-        else: data = {
-            'result': 0,
-            'errors': json.loads(form.errors.as_json()),
-        }
+        else:
+            data = {
+                'result': 0,
+                'errors': json.loads(form.errors.as_json()),
+            }
         return JsonResponse(data)
 
 
 class MatchDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
+        message = Constants.message_failed
         if 'pk' in kwargs:
             pk = kwargs['pk']
             Match.objects.get(pk=pk).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
 class MatchUpdate(UpdateView):
     model = Match
     fields = ['event', 'match_type', 'participants']
-    template_name = static_templates.get_update_template_name('match')
+    template_name = static_templates.update('match')
 
 
 class TagTeamMatchCreate(View):
     form_class = TagMatchForm
-    template_name = static_templates.get_create_template_name('tag_team_match')
+    template_name = static_templates.create('tag_team_match')
 
     def get(self, request):
         form = self.form_class(None)
@@ -487,11 +475,11 @@ class TagTeamMatchCreate(View):
 
 class TagTeamMatchDelete(DeleteView):
     def post(self, request, *args, **kwargs):
-        message = 'failed'
+        message = Constants.message_failed
         if 'pk' in kwargs:
             pk = kwargs['pk']
             TagTeamMatch.objects.get(pk=pk).delete()
-            message = 'deleted'
+            message = Constants.message_deleted
         return JsonResponse(message, safe=False)
 
 
@@ -526,7 +514,7 @@ class DraftHistoryCreate(View):
 
 
 class DraftsView(View):
-    template_name = static_templates.get_view_template_name('draft')
+    template_name = static_templates.view('draft')
 
     def get(self, request):
         drafts = TemporaryDraft.objects.all()
@@ -541,16 +529,16 @@ class DraftDelete(View):
     def post(self, request):
         deleted = TemporaryDraft.objects.all().delete()
         if deleted:
-            message = 'deleted'
+            message = Constants.message_deleted
         else:
-            message = 'failed'
+            message = Constants.message_failed
         return JsonResponse(message, safe=False)
 
 
 def get_wrestlers(request):
     if request.is_ajax():
         q = request.GET.get('term', '')
-        wrestlers = Wrestler.objects.filter(name__icontains = q)
+        wrestlers = Wrestler.objects.filter(name__icontains=q)
         results = []
         for wrestler in wrestlers:
             results.append(wrestler.name)
