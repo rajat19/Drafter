@@ -119,4 +119,4 @@ migrations/
 # DB files
 *.sqlite3
 
-*/.DS_Store
+.DS_Store
